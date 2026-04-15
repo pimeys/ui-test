@@ -34,18 +34,18 @@
   // ========== Data Constants ==========
 
   var NAMES = [
-    "Kite Packaging Ltd",
-    "PP Raw Dog Food Ltd",
-    "Adam Hamdi",
-    "Rave Coffee HQ",
-    "GOODS IN YOUR DEP CO",
-    "Express Logistics UK",
-    "Northern Freight Co",
-    "Swift Parcels Ltd",
-    "Metro Distribution",
-    "Central Warehouse Co",
-    "BrightBox Supplies",
-    "Apex Couriers",
+    "Greenfield Packaging Ltd",
+    "Northway Pet Supplies Ltd",
+    "J. Harmon",
+    "Redstone Roasters HQ",
+    "ALLSTOCK DEPOT CO",
+    "Ridgeway Logistics UK",
+    "Pennine Freight Co",
+    "Whitmore Parcels Ltd",
+    "Lakeside Distribution",
+    "Broadgate Warehouse Co",
+    "Clearpath Supplies",
+    "Summit Couriers",
   ];
 
   var SURCHARGES = ["LF", "TL"];
@@ -140,9 +140,9 @@
     for (var i = 0; i < count; i++) {
       var consNum;
       if (rng() < 0.03) {
-        consNum = "B0" + String(64000 + Math.floor(rng() * 1000));
+        consNum = "BX" + String(64000 + Math.floor(rng() * 1000));
       } else {
-        consNum = "KP" + String(baseNum + i * 3 + Math.floor(rng() * 3));
+        consNum = "GF" + String(baseNum + i * 3 + Math.floor(rng() * 3));
       }
 
       // First several entries in the 13th dataset get varied names (matches screenshots)
