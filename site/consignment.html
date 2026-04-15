@@ -54,15 +54,32 @@
         <input type="text" class="search-box" placeholder="Search...">
         <button class="btn" type="button">PRINT MANIFEST</button>
         <span class="spacer"></span>
-        <label for="date-type">Collection Date</label>
         <select id="date-type">
           <option value="collection">Collection Date</option>
           <option value="delivery">Delivery Date</option>
         </select>
-        <input type="text" class="date-input" id="date-from" placeholder="DD/MM/YYYY" value="13/04/2026">
-        <span class="sep">&ndash;</span>
-        <input type="text" class="date-input" id="date-to" placeholder="DD/MM/YYYY" value="13/04/2026">
-        <button class="btn btn-dark" type="button" id="apply-filter">Apply</button>
+        <div class="date-range-wrap" id="date-range-wrap">
+          <button class="date-range-trigger" id="date-trigger" type="button">
+            13/04/26 &ndash; 13/04/26
+          </button>
+          <div class="date-picker-drop" id="date-picker">
+            <div class="dp-fields">
+              <div class="dp-field">
+                <label for="dp-from">From</label>
+                <input type="text" id="dp-from" value="13/04/2026" placeholder="DD/MM/YYYY">
+              </div>
+              <div class="dp-field">
+                <label for="dp-to">To</label>
+                <input type="text" id="dp-to" value="13/04/2026" placeholder="DD/MM/YYYY">
+              </div>
+            </div>
+            <div class="dp-calendar" id="dp-calendar"></div>
+            <div class="dp-actions">
+              <button class="btn btn-dark" type="button" id="dp-apply">Apply</button>
+              <button class="btn" type="button" id="dp-cancel">Cancel</button>
+            </div>
+          </div>
+        </div>
         <div class="view-toggles">
           <button type="button" title="List view">&#9776;</button>
           <button type="button" title="Email view">&#9993;</button>

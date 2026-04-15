@@ -421,20 +421,123 @@ button { font-family: inherit; }
   font-size: 13px;
   font-family: inherit;
 }
-.filter-bar .date-input {
-  width: 120px;
-  padding: 8px 10px;
+.filter-bar .spacer { flex: 1; }
+
+/* === Date Range Picker === */
+.date-range-wrap { position: relative; }
+.date-range-trigger {
+  padding: 8px 16px;
+  border: 1px solid #ccc;
+  background: #fff;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.date-range-trigger:hover { background: #f9f9f9; }
+.date-picker-drop {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 4px;
+  background: #fff;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  padding: 16px;
+  z-index: 100;
+  width: 300px;
+}
+.date-picker-drop.open { display: block; }
+.dp-fields {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.dp-field { flex: 1; }
+.dp-field label {
+  display: block;
+  font-size: 11px;
+  font-weight: bold;
+  color: #555;
+  margin-bottom: 3px;
+  text-transform: uppercase;
+}
+.dp-field input {
+  width: 100%;
+  padding: 7px 8px;
   border: 1px solid #ccc;
   font-size: 13px;
   font-family: inherit;
   text-align: center;
 }
-.filter-bar label {
-  font-size: 13px;
-  color: #555;
+.dp-field input:focus { outline: 2px solid #5c8fd6; outline-offset: -1px; }
+.dp-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
 }
-.filter-bar .sep { color: #999; }
-.filter-bar .spacer { flex: 1; }
+.dp-nav span {
+  font-size: 14px;
+  font-weight: bold;
+}
+.dp-nav button {
+  background: none;
+  border: 1px solid #ccc;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  font-size: 16px;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dp-nav button:hover { background: #f0f0f0; }
+.dp-grid {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 12px;
+}
+.dp-grid th {
+  font-size: 11px;
+  font-weight: bold;
+  color: #888;
+  padding: 4px 0;
+  text-align: center;
+}
+.dp-grid td {
+  text-align: center;
+  padding: 0;
+}
+.dp-grid .dp-day {
+  width: 36px;
+  height: 30px;
+  line-height: 30px;
+  font-size: 13px;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+.dp-grid .dp-day:hover { background: #e3f2fd; }
+.dp-grid .dp-day.dp-sel {
+  background: #00acc1;
+  color: #fff;
+  font-weight: bold;
+}
+.dp-grid .dp-day.dp-in-range {
+  background: #e0f7fa;
+}
+.dp-grid .dp-day.dp-today {
+  border: 1px solid #999;
+}
+.dp-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+.dp-actions button { padding: 7px 20px; }
 .view-toggles { display: flex; gap: 4px; }
 .view-toggles button {
   width: 30px;

@@ -206,6 +206,139 @@
     };
   }
 
+  // ========== Date Picker State ==========
+
+  var MONTHS = [
+    "January","February","March","April","May","June",
+    "July","August","September","October","November","December"
+  ];
+
+  var dpFromIso = "2026-04-13";
+  var dpToIso = "2026-04-13";
+  var dpViewYear = 2026;
+  var dpViewMonth = 3; // 0-indexed, 3 = April
+  var dpSelecting = "from"; // which field the next calendar click sets
+
+  function pad2(n) { return n < 10 ? "0" + n : String(n); }
+
+  function fmtTrigger(fromIso, toIso) {
+    return fmtDateShort(fromIso) + " \u2013 " + fmtDateShort(toIso);
+  }
+
+  function renderCalendar() {
+    var el = document.getElementById("dp-calendar");
+    if (!el) return;
+
+    var firstDay = new Date(dpViewYear, dpViewMonth, 1).getDay();
+    var startCol = (firstDay + 6) % 7; // Mon=0
+    var daysInMonth = new Date(dpViewYear, dpViewMonth + 1, 0).getDate();
+    var todayIso = new Date().toISOString().slice(0, 10);
+
+    var html = '<div class="dp-nav">';
+    html += '<button type="button" id="dp-prev">&lsaquo;</button>';
+    html += "<span>" + MONTHS[dpViewMonth] + " " + dpViewYear + "</span>";
+    html += '<button type="button" id="dp-next">&rsaquo;</button>';
+    html += "</div>";
+
+    html += '<table class="dp-grid"><thead><tr>';
+    html += "<th>Mo</th><th>Tu</th><th>We</th><th>Th</th><th>Fr</th><th>Sa</th><th>Su</th>";
+    html += "</tr></thead><tbody>";
+
+    var day = 1;
+    for (var row = 0; row < 6 && day <= daysInMonth; row++) {
+      html += "<tr>";
+      for (var col = 0; col < 7; col++) {
+        if ((row === 0 && col < startCol) || day > daysInMonth) {
+          html += "<td></td>";
+        } else {
+          var iso = dpViewYear + "-" + pad2(dpViewMonth + 1) + "-" + pad2(day);
+          var cls = "dp-day";
+          if (iso === dpFromIso || iso === dpToIso) cls += " dp-sel";
+          else if (dpFromIso && dpToIso && iso > dpFromIso && iso < dpToIso) cls += " dp-in-range";
+          if (iso === todayIso) cls += " dp-today";
+          html += '<td><div class="' + cls + '" data-date="' + iso + '">' + day + "</div></td>";
+          day++;
+        }
+      }
+      html += "</tr>";
+    }
+    html += "</tbody></table>";
+    el.innerHTML = html;
+
+    // Bind nav
+    document.getElementById("dp-prev").addEventListener("click", function () {
+      dpViewMonth--;
+      if (dpViewMonth < 0) { dpViewMonth = 11; dpViewYear--; }
+      renderCalendar();
+    });
+    document.getElementById("dp-next").addEventListener("click", function () {
+      dpViewMonth++;
+      if (dpViewMonth > 11) { dpViewMonth = 0; dpViewYear++; }
+      renderCalendar();
+    });
+
+    // Bind day clicks
+    var days = el.querySelectorAll(".dp-day");
+    for (var i = 0; i < days.length; i++) {
+      days[i].addEventListener("click", onDayClick);
+    }
+  }
+
+  function onDayClick() {
+    var iso = this.getAttribute("data-date");
+    if (!iso) return;
+    var display = fmtDateLong(iso);
+
+    if (dpSelecting === "from") {
+      dpFromIso = iso;
+      dpToIso = iso;
+      dpSelecting = "to";
+    } else {
+      if (iso >= dpFromIso) {
+        dpToIso = iso;
+      } else {
+        dpFromIso = iso;
+        dpToIso = iso;
+      }
+      dpSelecting = "from";
+    }
+
+    // Sync text fields
+    var fromEl = document.getElementById("dp-from");
+    var toEl = document.getElementById("dp-to");
+    if (fromEl) fromEl.value = fmtDateLong(dpFromIso);
+    if (toEl) toEl.value = fmtDateLong(dpToIso);
+
+    renderCalendar();
+  }
+
+  /** YYYY-MM-DD -> DD/MM/YYYY */
+  function fmtDateLong(iso) {
+    var p = iso.split("-");
+    return p[2] + "/" + p[1] + "/" + p[0];
+  }
+
+  function openDatePicker() {
+    var drop = document.getElementById("date-picker");
+    if (!drop) return;
+    // Sync view month to current from date
+    var parts = dpFromIso.split("-");
+    dpViewYear = parseInt(parts[0], 10);
+    dpViewMonth = parseInt(parts[1], 10) - 1;
+    dpSelecting = "from";
+
+    document.getElementById("dp-from").value = fmtDateLong(dpFromIso);
+    document.getElementById("dp-to").value = fmtDateLong(dpToIso);
+
+    renderCalendar();
+    drop.classList.add("open");
+  }
+
+  function closeDatePicker() {
+    var drop = document.getElementById("date-picker");
+    if (drop) drop.classList.remove("open");
+  }
+
   // ========== Consignment Page Rendering ==========
 
   var currentData = [];
@@ -295,22 +428,34 @@
   }
 
   function applyFilter() {
-    var fromStr = document.getElementById("date-from").value;
-    var toStr = document.getElementById("date-to").value;
-    var fromIso = parseDate(fromStr);
-    var toIso = parseDate(toStr);
+    // Read from the date picker text fields (user may have typed directly)
+    var fromEl = document.getElementById("dp-from");
+    var toEl = document.getElementById("dp-to");
 
-    if (!fromIso || !toIso) {
+    if (fromEl && toEl) {
+      var fi = parseDate(fromEl.value);
+      var ti = parseDate(toEl.value);
+      if (fi) dpFromIso = fi;
+      if (ti) dpToIso = ti;
+    }
+
+    if (!dpFromIso || !dpToIso) {
       alert("Please enter dates in DD/MM/YYYY format.");
       return;
     }
 
-    currentData = generateRange(fromIso, toIso);
+    // Update trigger button text
+    var trigger = document.getElementById("date-trigger");
+    if (trigger) trigger.textContent = fmtTrigger(dpFromIso, dpToIso);
+
+    closeDatePicker();
+
+    currentData = generateRange(dpFromIso, dpToIso);
     currentPage = 1;
-    renderStatusCards(computeStatus(currentData, fromIso, toIso));
+    renderStatusCards(computeStatus(currentData, dpFromIso, dpToIso));
     renderTable(currentData, currentPage);
     renderPagination(currentData.length, currentPage);
-    // Scroll the table frame back to top on new filter
+
     var wrap = document.querySelector(".table-wrap");
     if (wrap) wrap.scrollTop = 0;
   }
@@ -367,19 +512,43 @@
   function initConsignment() {
     if (!requireAuth()) return;
 
-    document.getElementById("apply-filter").addEventListener("click", applyFilter);
-
-    // Allow Enter key in date fields to trigger filter
-    var dateFrom = document.getElementById("date-from");
-    var dateTo = document.getElementById("date-to");
-    function onEnter(e) {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        applyFilter();
+    // Date range trigger opens the picker
+    document.getElementById("date-trigger").addEventListener("click", function (e) {
+      e.stopPropagation();
+      var drop = document.getElementById("date-picker");
+      if (drop.classList.contains("open")) {
+        closeDatePicker();
+      } else {
+        openDatePicker();
       }
+    });
+
+    // Apply / Cancel inside the picker
+    document.getElementById("dp-apply").addEventListener("click", function () {
+      applyFilter();
+    });
+    document.getElementById("dp-cancel").addEventListener("click", function () {
+      closeDatePicker();
+    });
+
+    // Enter key in picker text fields triggers apply
+    var dpFrom = document.getElementById("dp-from");
+    var dpTo = document.getElementById("dp-to");
+    function onEnter(e) {
+      if (e.key === "Enter") { e.preventDefault(); applyFilter(); }
     }
-    dateFrom.addEventListener("keydown", onEnter);
-    dateTo.addEventListener("keydown", onEnter);
+    dpFrom.addEventListener("keydown", onEnter);
+    dpTo.addEventListener("keydown", onEnter);
+
+    // Prevent clicks inside picker from closing it
+    document.getElementById("date-picker").addEventListener("click", function (e) {
+      e.stopPropagation();
+    });
+
+    // Click outside closes the picker
+    document.addEventListener("click", function () {
+      closeDatePicker();
+    });
 
     // Load default data
     applyFilter();
