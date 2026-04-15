@@ -12,8 +12,8 @@
         pkgs = nixpkgs.legacyPackages.${system};
 
         serve = pkgs.writeShellScriptBin "serve" ''
-          echo "Serving site at http://localhost:8080"
-          ${pkgs.python3}/bin/python3 -m http.server 8080 --directory site
+          echo "Serving site at http://localhost:6969"
+          ${pkgs.python3}/bin/python3 -m http.server 6969 --directory site
         '';
 
         build = pkgs.writeShellScriptBin "build" ''
@@ -35,7 +35,7 @@
           shellHook = ''
             echo "enterprise-ui dev shell"
             echo ""
-            echo "  serve    — preview site at http://localhost:8080"
+            echo "  serve    — preview site at http://localhost:6969"
             echo "  prettier — format HTML/CSS/JS files"
             echo ""
           '';

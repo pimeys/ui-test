@@ -76,7 +76,7 @@
     "2026-04-17": 6,
   };
 
-  var ITEMS_PER_PAGE = 100;
+  var ITEMS_PER_PAGE = 85;
 
   // ========== Date Helpers ==========
 
@@ -163,7 +163,7 @@
     return all;
   }
 
-  function computeStatus(data) {
+  function computeStatus(data, fromIso, toIso) {
     var total = data.length;
     if (total === 0)
       return {
@@ -175,11 +175,26 @@
         completed: 0,
         total: 0,
       };
-    var rng = mulberry32(total * 31);
-    var completed = Math.max(0, Math.floor(total * 0.009 + rng() * 3));
-    var notPrinted = Math.max(0, Math.floor(total * 0.04 + rng() * 2));
+
+    // Exact values from the real portal for 13/04/2026
+    if (fromIso === "2026-04-13" && toIso === "2026-04-13") {
+      return {
+        notPrinted: 15,
+        printed: 325,
+        discrepancies: 0,
+        paperwork: 0,
+        outstanding: 337,
+        completed: 3,
+        total: 340,
+      };
+    }
+
+    // Compute proportionally for other dates
+    var rng = mulberry32(total * 31 + fromIso.charCodeAt(8));
+    var completed = Math.max(0, Math.round(total * 0.009 + rng() * 2));
+    var notPrinted = Math.max(0, Math.round(total * 0.044 + rng() * 1));
     var printed = total - notPrinted;
-    var disc = total > 100 ? Math.floor(rng() * 2) : 0;
+    var disc = total > 150 ? Math.floor(rng() * 2) : 0;
     return {
       notPrinted: notPrinted,
       printed: printed,
@@ -274,9 +289,9 @@
     currentPage = parseInt(this.getAttribute("data-p"), 10);
     renderTable(currentData, currentPage);
     renderPagination(currentData.length, currentPage);
-    // Scroll table into view
-    var tbl = document.getElementById("data-table");
-    if (tbl) tbl.scrollIntoView({ behavior: "auto" });
+    // Scroll the table frame back to top
+    var wrap = document.querySelector(".table-wrap");
+    if (wrap) wrap.scrollTop = 0;
   }
 
   function applyFilter() {
@@ -292,9 +307,12 @@
 
     currentData = generateRange(fromIso, toIso);
     currentPage = 1;
-    renderStatusCards(computeStatus(currentData));
+    renderStatusCards(computeStatus(currentData, fromIso, toIso));
     renderTable(currentData, currentPage);
     renderPagination(currentData.length, currentPage);
+    // Scroll the table frame back to top on new filter
+    var wrap = document.querySelector(".table-wrap");
+    if (wrap) wrap.scrollTop = 0;
   }
 
   // ========== Login Page ==========
