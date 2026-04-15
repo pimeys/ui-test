@@ -1,64 +1,85 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>myPortal</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body data-page="login">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>myPortal</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body data-page="login">
+    <header class="header">
+      <div class="header-logo">myPortal</div>
+      <button class="btn-track" type="button">
+        Track your order <span class="pin">&#9679;</span>
+      </button>
+    </header>
 
-  <header class="header">
-    <div class="header-logo">myPortal</div>
-    <button class="btn-track" type="button">
-      Track your order <span class="pin">&#9679;</span>
-    </button>
-  </header>
+    <main class="login-page">
+      <div class="login-hero">
+        <h1>myPortal</h1>
+        <h2>Driving insight to your orders</h2>
+        <ul class="login-features">
+          <li>Real-time ETAs</li>
+          <li>Real-time PODs</li>
+          <li>Process Orders</li>
+          <li>API &amp; Implant Systems</li>
+          <li>Capture Scanning</li>
+        </ul>
+      </div>
 
-  <main class="login-page">
-    <div class="login-hero">
-      <h1>myPortal</h1>
-      <h2>Driving insight to your orders</h2>
-      <ul class="login-features">
-        <li>Real-time ETAs</li>
-        <li>Real-time PODs</li>
-        <li>Process Orders</li>
-        <li>API &amp; Implant Systems</li>
-        <li>Capture Scanning</li>
-      </ul>
-    </div>
+      <div class="login-card">
+        <h3>Login to myPortal</h3>
+        <form id="login-form" autocomplete="off">
+          <div class="form-group">
+            <input
+              type="text"
+              id="username"
+              name="username"
+              placeholder="Username*"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Password*"
+              required
+            />
+          </div>
+          <div class="forgot-link"><a href="#">Forgotten password?</a></div>
+          <div class="login-error" id="login-error">
+            Invalid username or password.
+          </div>
+          <button type="submit" class="login-btn">Login</button>
+          <p class="login-terms">
+            By signing in, I accept the Software Terms of Service and Privacy
+            Notice.
+          </p>
+        </form>
+      </div>
+    </main>
 
-    <div class="login-card">
-      <h3>Login to myPortal</h3>
-      <form id="login-form" autocomplete="off">
-        <div class="form-group">
-          <input type="text" id="username" name="username" placeholder="Username*" required>
-        </div>
-        <div class="form-group">
-          <input type="password" id="password" name="password" placeholder="Password*" required>
-        </div>
-        <div class="forgot-link"><a href="#">Forgotten password?</a></div>
-        <div class="login-error" id="login-error">Invalid username or password.</div>
-        <button type="submit" class="login-btn">Login</button>
-        <p class="login-terms">
-          By signing in, I accept the Software Terms of Service and Privacy Notice.
+    <!-- Session conflict dialog -->
+    <div class="overlay" id="session-overlay">
+      <div class="dialog">
+        <div class="dialog-user" id="dialog-user"></div>
+        <p>
+          You are logged in on another session, which will be terminated if you
+          continue
         </p>
-      </form>
-    </div>
-  </main>
-
-  <!-- Session conflict dialog -->
-  <div class="overlay" id="session-overlay">
-    <div class="dialog">
-      <div class="dialog-user" id="dialog-user"></div>
-      <p>You are logged in on another session, which will be terminated if you continue</p>
-      <div class="dialog-actions">
-        <button class="btn-confirm" id="btn-confirm" type="button">Confirm</button>
-        <button class="btn-cancel" id="btn-cancel" type="button">Cancel</button>
+        <div class="dialog-actions">
+          <button class="btn-confirm" id="btn-confirm" type="button">
+            Confirm
+          </button>
+          <button class="btn-cancel" id="btn-cancel" type="button">
+            Cancel
+          </button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <script src="app.js"></script>
-</body>
+    <script src="app.js"></script>
+  </body>
 </html>

@@ -1,119 +1,156 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>My Portal</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body data-page="consignment">
-
-  <header class="header">
-    <div class="header-logo">myPortal</div>
-    <div class="header-right">
-      <div class="header-icons">
-        <button type="button" title="Search">&#128269;</button>
-        <button type="button" title="History">&#128339;</button>
-        <button type="button" title="Attachments">&#128206;</button>
-      </div>
-      <div class="header-user">
-        Portal
-        <span class="avatar">PU</span>
-      </div>
-    </div>
-  </header>
-
-  <div class="app-layout">
-    <nav class="sidebar">
-      <ul class="sidebar-nav">
-        <li><a href="dashboard.html"><span class="nav-icon">&#8962;</span> Home</a></li>
-        <li><a href="#"><span class="nav-icon">&#9830;</span> Customers</a></li>
-        <li><a href="consignment.html" class="active"><span class="nav-icon">&#9776;</span> Consignments</a></li>
-        <li><a href="#"><span class="nav-icon">&#8364;</span> Invoices</a></li>
-        <li><a href="#"><span class="nav-icon">&#9881;</span> Admin Centre</a></li>
-        <li><a href="#"><span class="nav-icon">&#10148;</span> Customer Dispatch</a></li>
-        <li><a href="#"><span class="nav-icon">&#9888;</span> Import Failures</a></li>
-      </ul>
-      <div class="sidebar-bottom">
-        <a href="#"><span class="nav-icon">&#9881;</span> Settings</a>
-      </div>
-    </nav>
-
-    <main class="main-content framed">
-      <div class="page-head">
-        <h2>Consignment</h2>
-        <div class="page-head-actions">
-          <button class="btn" type="button">NEW</button>
-          <button class="btn" type="button">CLOSE</button>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>My Portal</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body data-page="consignment">
+    <header class="header">
+      <div class="header-logo">myPortal</div>
+      <div class="header-right">
+        <div class="header-icons">
+          <button type="button" title="Search">&#128269;</button>
+          <button type="button" title="History">&#128339;</button>
+          <button type="button" title="Attachments">&#128206;</button>
+        </div>
+        <div class="header-user">
+          Portal
+          <span class="avatar">PU</span>
         </div>
       </div>
+    </header>
 
-      <div class="status-cards" id="status-cards"></div>
+    <div class="app-layout">
+      <nav class="sidebar">
+        <ul class="sidebar-nav">
+          <li>
+            <a href="dashboard.html"
+              ><span class="nav-icon">&#8962;</span> Home</a
+            >
+          </li>
+          <li>
+            <a href="#"><span class="nav-icon">&#9830;</span> Customers</a>
+          </li>
+          <li>
+            <a href="consignment.html" class="active"
+              ><span class="nav-icon">&#9776;</span> Consignments</a
+            >
+          </li>
+          <li>
+            <a href="#"><span class="nav-icon">&#8364;</span> Invoices</a>
+          </li>
+          <li>
+            <a href="#"><span class="nav-icon">&#9881;</span> Admin Centre</a>
+          </li>
+          <li>
+            <a href="#"
+              ><span class="nav-icon">&#10148;</span> Customer Dispatch</a
+            >
+          </li>
+          <li>
+            <a href="#"
+              ><span class="nav-icon">&#9888;</span> Import Failures</a
+            >
+          </li>
+        </ul>
+        <div class="sidebar-bottom">
+          <a href="#"><span class="nav-icon">&#9881;</span> Settings</a>
+        </div>
+      </nav>
 
-      <div class="filter-bar">
-        <input type="text" class="search-box" placeholder="Search...">
-        <button class="btn" type="button">PRINT MANIFEST</button>
-        <span class="spacer"></span>
-        <select id="date-type">
-          <option value="collection">Collection Date</option>
-          <option value="delivery">Delivery Date</option>
-        </select>
-        <div class="date-range-wrap" id="date-range-wrap">
-          <button class="date-range-trigger" id="date-trigger" type="button">
-            13/04/26 &ndash; 13/04/26
-          </button>
-          <div class="date-picker-drop" id="date-picker">
-            <div class="dp-fields">
-              <div class="dp-field">
-                <label for="dp-from">From</label>
-                <input type="text" id="dp-from" value="13/04/2026" placeholder="DD/MM/YYYY">
-              </div>
-              <div class="dp-field">
-                <label for="dp-to">To</label>
-                <input type="text" id="dp-to" value="13/04/2026" placeholder="DD/MM/YYYY">
-              </div>
-            </div>
-            <div class="dp-calendar" id="dp-calendar"></div>
-            <div class="dp-actions">
-              <button class="btn btn-dark" type="button" id="dp-apply">Apply</button>
-              <button class="btn" type="button" id="dp-cancel">Cancel</button>
-            </div>
+      <main class="main-content framed">
+        <div class="page-head">
+          <h2>Consignment</h2>
+          <div class="page-head-actions">
+            <button class="btn" type="button">NEW</button>
+            <button class="btn" type="button">CLOSE</button>
           </div>
         </div>
-        <div class="view-toggles">
-          <button type="button" title="List view">&#9776;</button>
-          <button type="button" title="Email view">&#9993;</button>
-          <button type="button" title="Grid view">&#9638;</button>
-          <button type="button" title="Card view">&#9744;</button>
+
+        <div class="status-cards" id="status-cards"></div>
+
+        <div class="filter-bar">
+          <input type="text" class="search-box" placeholder="Search..." />
+          <button class="btn" type="button">PRINT MANIFEST</button>
+          <span class="spacer"></span>
+          <select id="date-type">
+            <option value="collection">Collection Date</option>
+            <option value="delivery">Delivery Date</option>
+          </select>
+          <div class="date-range-wrap" id="date-range-wrap">
+            <button class="date-range-trigger" id="date-trigger" type="button">
+              15/04/26 &ndash; 15/04/26
+            </button>
+            <div class="date-picker-drop" id="date-picker">
+              <div class="dp-fields">
+                <div class="dp-field">
+                  <label for="dp-from">From</label>
+                  <input
+                    type="text"
+                    id="dp-from"
+                    value="15/04/2026"
+                    placeholder="DD/MM/YYYY"
+                  />
+                </div>
+                <div class="dp-field">
+                  <label for="dp-to">To</label>
+                  <input
+                    type="text"
+                    id="dp-to"
+                    value="15/04/2026"
+                    placeholder="DD/MM/YYYY"
+                  />
+                </div>
+              </div>
+              <div class="dp-calendar" id="dp-calendar"></div>
+              <div class="dp-actions">
+                <button class="btn btn-dark" type="button" id="dp-apply">
+                  Apply
+                </button>
+                <button class="btn" type="button" id="dp-cancel">Cancel</button>
+              </div>
+            </div>
+          </div>
+          <div class="view-toggles">
+            <button type="button" title="List view">&#9776;</button>
+            <button type="button" title="Email view">&#9993;</button>
+            <button type="button" title="Grid view">&#9638;</button>
+            <button type="button" title="Card view">&#9744;</button>
+          </div>
         </div>
-      </div>
 
-      <div class="table-wrap">
-        <table class="data-table" id="data-table">
-          <thead>
-            <tr>
-              <th class="col-check"><input type="checkbox" id="check-all"></th>
-              <th>Consignm... <span class="sort-icon">&#8597;</span></th>
-              <th>Collection Name <span class="sort-icon">&#8597;</span></th>
-              <th>Collecti... Date <span class="sort-icon">&#8597;</span></th>
-              <th>Surcharg... Codes <span class="sort-icon">&#8597;</span></th>
-              <th>Billing Units <span class="sort-icon">&#8597;</span></th>
-              <th>Total Spaces</th>
-              <th>Total Weight</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="table-body"></tbody>
-        </table>
-      </div>
+        <div class="table-wrap">
+          <table class="data-table" id="data-table">
+            <thead>
+              <tr>
+                <th class="col-check">
+                  <input type="checkbox" id="check-all" />
+                </th>
+                <th>Consignm... <span class="sort-icon">&#8597;</span></th>
+                <th>Collection Name <span class="sort-icon">&#8597;</span></th>
+                <th>Collecti... Date <span class="sort-icon">&#8597;</span></th>
+                <th>
+                  Surcharg... Codes <span class="sort-icon">&#8597;</span>
+                </th>
+                <th>Billing Units <span class="sort-icon">&#8597;</span></th>
+                <th>Total Spaces</th>
+                <th>Total Weight</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="table-body"></tbody>
+          </table>
+        </div>
 
-      <div class="table-footer">
-        <div class="create-filter-link">Create Filter</div>
-        <div class="pagination" id="pagination"></div>
-      </div>
-    </main>
-  </div>
+        <div class="table-footer">
+          <div class="create-filter-link">Create Filter</div>
+          <div class="pagination" id="pagination"></div>
+        </div>
+      </main>
+    </div>
 
-  <script src="app.js"></script>
-</body>
+    <script src="app.js"></script>
+  </body>
 </html>

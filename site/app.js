@@ -78,6 +78,14 @@
 
   var ITEMS_PER_PAGE = 85;
 
+  // ========== Loading Configuration ==========
+
+  var DELAY_AUTH = 1200; // Login credential check
+  var DELAY_SIGN_IN = 1500; // Session establishment after confirm
+  var DELAY_PAGE = 1800; // Full page content load (dashboard/consignment)
+  var DELAY_DATA = 1200; // Data refresh (filter apply)
+  var DELAY_PAGE_NAV = 700; // Table pagination
+
   // ========== Date Helpers ==========
 
   /** Parse DD/MM/YYYY or DD/MM/YY or YYYY-MM-DD into ISO YYYY-MM-DD */
@@ -446,6 +454,37 @@
     if (drop) drop.classList.remove("open");
   }
 
+  // ========== Loading Helpers ==========
+
+  var pendingTimeout = null;
+  var pendingHide = null;
+
+  function cancelPending() {
+    if (pendingTimeout) {
+      clearTimeout(pendingTimeout);
+      pendingTimeout = null;
+    }
+    if (pendingHide) {
+      pendingHide();
+      pendingHide = null;
+    }
+  }
+
+  function showLoading(container, msg, isData) {
+    var overlay = document.createElement("div");
+    overlay.className =
+      "loading-overlay" + (isData ? " loading-overlay-data" : "");
+    overlay.innerHTML =
+      '<div class="loading-spinner"></div>' +
+      '<div class="loading-text">' +
+      (msg || "Loading...") +
+      "</div>";
+    container.appendChild(overlay);
+    return function () {
+      if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    };
+  }
+
   // ========== Consignment Page Rendering ==========
 
   var currentData = [];
@@ -544,12 +583,23 @@
   }
 
   function onPageClick() {
-    currentPage = parseInt(this.getAttribute("data-p"), 10);
-    renderTable(currentData, currentPage);
-    renderPagination(currentData.length, currentPage);
-    // Scroll the table frame back to top
+    var p = parseInt(this.getAttribute("data-p"), 10);
+    if (p === currentPage) return;
+    currentPage = p;
+
+    cancelPending();
+
     var wrap = document.querySelector(".table-wrap");
-    if (wrap) wrap.scrollTop = 0;
+    pendingHide = showLoading(wrap, "Loading...", true);
+
+    pendingTimeout = setTimeout(function () {
+      pendingTimeout = null;
+      renderTable(currentData, currentPage);
+      renderPagination(currentData.length, currentPage);
+      pendingHide();
+      pendingHide = null;
+      wrap.scrollTop = 0;
+    }, DELAY_PAGE_NAV);
   }
 
   function applyFilter() {
@@ -574,15 +624,23 @@
     if (trigger) trigger.textContent = fmtTrigger(dpFromIso, dpToIso);
 
     closeDatePicker();
+    cancelPending();
 
-    currentData = generateRange(dpFromIso, dpToIso);
-    currentPage = 1;
-    renderStatusCards(computeStatus(currentData, dpFromIso, dpToIso));
-    renderTable(currentData, currentPage);
-    renderPagination(currentData.length, currentPage);
+    var main = document.querySelector(".main-content");
+    pendingHide = showLoading(main);
 
-    var wrap = document.querySelector(".table-wrap");
-    if (wrap) wrap.scrollTop = 0;
+    pendingTimeout = setTimeout(function () {
+      pendingTimeout = null;
+      currentData = generateRange(dpFromIso, dpToIso);
+      currentPage = 1;
+      renderStatusCards(computeStatus(currentData, dpFromIso, dpToIso));
+      renderTable(currentData, currentPage);
+      renderPagination(currentData.length, currentPage);
+      pendingHide();
+      pendingHide = null;
+      var wrap = document.querySelector(".table-wrap");
+      if (wrap) wrap.scrollTop = 0;
+    }, DELAY_DATA);
   }
 
   // ========== Login Page ==========
@@ -597,24 +655,41 @@
     var dialogUser = document.getElementById("dialog-user");
     var btnConfirm = document.getElementById("btn-confirm");
     var btnCancel = document.getElementById("btn-cancel");
+    var loginBtn = form.querySelector(".login-btn");
+    var loginText = loginBtn.textContent;
 
     form.addEventListener("submit", function (e) {
       e.preventDefault();
       var u = document.getElementById("username").value.trim();
       var p = document.getElementById("password").value;
 
-      if (u === "username" && p === "password") {
-        errorEl.style.display = "none";
-        dialogUser.textContent = u;
-        overlay.classList.add("visible");
-      } else {
-        errorEl.style.display = "block";
-      }
+      // Disable button and show authenticating state
+      loginBtn.disabled = true;
+      loginBtn.textContent = "Authenticating...";
+      errorEl.style.display = "none";
+
+      setTimeout(function () {
+        loginBtn.disabled = false;
+        loginBtn.textContent = loginText;
+
+        if (u === "username" && p === "password") {
+          dialogUser.textContent = u;
+          overlay.classList.add("visible");
+        } else {
+          errorEl.style.display = "block";
+        }
+      }, DELAY_AUTH);
     });
 
     btnConfirm.addEventListener("click", function () {
       setAuthenticated(true);
-      window.location.href = "dashboard.html";
+      btnConfirm.disabled = true;
+      btnConfirm.textContent = "Signing in...";
+      btnCancel.disabled = true;
+
+      setTimeout(function () {
+        window.location.href = "dashboard.html";
+      }, DELAY_SIGN_IN);
     });
 
     btnCancel.addEventListener("click", function () {
@@ -626,17 +701,28 @@
 
   function initDashboard() {
     if (!requireAuth()) return;
-    var h = new Date().getHours();
-    var g =
-      h < 12 ? "Good Morning" : h < 18 ? "Good Afternoon" : "Good Evening";
-    var el = document.getElementById("greeting-text");
-    if (el) el.textContent = g + ", Portal User.";
+
+    var main = document.querySelector(".main-content");
+    var hide = showLoading(main);
+
+    setTimeout(function () {
+      var h = new Date().getHours();
+      var g =
+        h < 12 ? "Good Morning" : h < 18 ? "Good Afternoon" : "Good Evening";
+      var el = document.getElementById("greeting-text");
+      if (el) el.textContent = g + ", Portal User.";
+      hide();
+    }, DELAY_PAGE);
   }
 
   // ========== Consignment Page ==========
 
   function initConsignment() {
     if (!requireAuth()) return;
+
+    // Set correct trigger text immediately (behind the overlay)
+    var trigger = document.getElementById("date-trigger");
+    if (trigger) trigger.textContent = fmtTrigger(dpFromIso, dpToIso);
 
     // Date range trigger opens the picker
     document
@@ -683,8 +769,18 @@
       closeDatePicker();
     });
 
-    // Load default data
-    applyFilter();
+    // Show page loading overlay, then populate initial data
+    var main = document.querySelector(".main-content");
+    var hidePageLoad = showLoading(main);
+
+    setTimeout(function () {
+      currentData = generateRange(dpFromIso, dpToIso);
+      currentPage = 1;
+      renderStatusCards(computeStatus(currentData, dpFromIso, dpToIso));
+      renderTable(currentData, currentPage);
+      renderPagination(currentData.length, currentPage);
+      hidePageLoad();
+    }, DELAY_PAGE);
   }
 
   // ========== Boot ==========
