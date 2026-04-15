@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Portal</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="dashboard">
+
+  <header class="header">
+    <div class="header-logo">myPortal</div>
+    <div class="header-right">
+      <div class="header-icons">
+        <button type="button" title="Search">&#128269;</button>
+        <button type="button" title="History">&#128339;</button>
+        <button type="button" title="Attachments">&#128206;</button>
+      </div>
+      <div class="header-user">
+        Portal
+        <span class="avatar">PU</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="app-layout">
+    <nav class="sidebar">
+      <ul class="sidebar-nav">
+        <li><a href="dashboard.html" class="active"><span class="nav-icon">&#8962;</span> Home</a></li>
+        <li><a href="#"><span class="nav-icon">&#9830;</span> Customers</a></li>
+        <li><a href="consignment.html"><span class="nav-icon">&#9776;</span> Consignments</a></li>
+        <li><a href="#"><span class="nav-icon">&#8364;</span> Invoices</a></li>
+        <li><a href="#"><span class="nav-icon">&#9881;</span> Admin Centre</a></li>
+        <li><a href="#"><span class="nav-icon">&#10148;</span> Customer Dispatch</a></li>
+        <li><a href="#"><span class="nav-icon">&#9888;</span> Import Failures</a></li>
+      </ul>
+      <div class="sidebar-bottom">
+        <a href="#"><span class="nav-icon">&#9881;</span> Settings</a>
+      </div>
+    </nav>
+
+    <main class="main-content">
+      <div class="dash-top">
+        <div class="greeting">
+          <h1 id="greeting-text">Good Afternoon, Portal User.</h1>
+          <p>Things are looking great. Enjoy your day.</p>
+        </div>
+        <div class="dash-filters">
+          <select>
+            <option>Delivery Date</option>
+            <option>Collection Date</option>
+          </select>
+          <span class="dash-date">13/04/26 &ndash; 13/04/26</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Consignment Breakdown</div>
+        <div class="chart-area">
+          <ul class="chart-legend">
+            <li><span class="dot" style="background:#2196F3"></span> Total Consignments <strong>357</strong></li>
+            <li><span class="dot" style="background:#4CAF50"></span> Clean Deliveries <strong>274</strong></li>
+            <li><span class="dot" style="background:#FF9800"></span> Out for Delivery <strong>60</strong></li>
+            <li><span class="dot" style="background:#f44336"></span> Discrepancies <strong>1</strong></li>
+            <li><span class="dot" style="background:#9C27B0"></span> Awaiting Dispatch <strong>23</strong></li>
+          </ul>
+          <svg viewBox="0 0 220 220" width="260" height="260">
+            <!-- background rings -->
+            <circle cx="110" cy="110" r="96" fill="none" stroke="#e8e8e8" stroke-width="18"/>
+            <circle cx="110" cy="110" r="73" fill="none" stroke="#e8e8e8" stroke-width="18"/>
+            <circle cx="110" cy="110" r="50" fill="none" stroke="#e8e8e8" stroke-width="12"/>
+            <!-- Blue - Total (full ring) -->
+            <circle cx="110" cy="110" r="96" fill="none" stroke="#2196F3" stroke-width="18"
+              stroke-dasharray="603 0" transform="rotate(-90 110 110)"/>
+            <!-- Green - Clean Deliveries 274/357 = 76.7% -->
+            <circle cx="110" cy="110" r="73" fill="none" stroke="#4CAF50" stroke-width="18"
+              stroke-dasharray="352 107" transform="rotate(-90 110 110)"/>
+            <!-- Orange - Out for Delivery 60/357 = 16.8% -->
+            <circle cx="110" cy="110" r="50" fill="none" stroke="#FF9800" stroke-width="12"
+              stroke-dasharray="53 261" transform="rotate(-90 110 110)"/>
+            <!-- Purple - Awaiting Dispatch 23/357 = 6.4% -->
+            <circle cx="110" cy="110" r="50" fill="none" stroke="#9C27B0" stroke-width="12"
+              stroke-dasharray="20 294" transform="rotate(-30 110 110)"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="card">
+        <p class="no-articles">No articles available</p>
+      </div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

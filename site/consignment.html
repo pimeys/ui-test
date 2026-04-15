@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Portal</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="consignment">
+
+  <header class="header">
+    <div class="header-logo">myPortal</div>
+    <div class="header-right">
+      <div class="header-icons">
+        <button type="button" title="Search">&#128269;</button>
+        <button type="button" title="History">&#128339;</button>
+        <button type="button" title="Attachments">&#128206;</button>
+      </div>
+      <div class="header-user">
+        Portal
+        <span class="avatar">PU</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="app-layout">
+    <nav class="sidebar">
+      <ul class="sidebar-nav">
+        <li><a href="dashboard.html"><span class="nav-icon">&#8962;</span> Home</a></li>
+        <li><a href="#"><span class="nav-icon">&#9830;</span> Customers</a></li>
+        <li><a href="consignment.html" class="active"><span class="nav-icon">&#9776;</span> Consignments</a></li>
+        <li><a href="#"><span class="nav-icon">&#8364;</span> Invoices</a></li>
+        <li><a href="#"><span class="nav-icon">&#9881;</span> Admin Centre</a></li>
+        <li><a href="#"><span class="nav-icon">&#10148;</span> Customer Dispatch</a></li>
+        <li><a href="#"><span class="nav-icon">&#9888;</span> Import Failures</a></li>
+      </ul>
+      <div class="sidebar-bottom">
+        <a href="#"><span class="nav-icon">&#9881;</span> Settings</a>
+      </div>
+    </nav>
+
+    <main class="main-content">
+      <div class="page-head">
+        <h2>Consignment</h2>
+        <div class="page-head-actions">
+          <button class="btn" type="button">NEW</button>
+          <button class="btn" type="button">CLOSE</button>
+        </div>
+      </div>
+
+      <div class="status-cards" id="status-cards"></div>
+
+      <div class="filter-bar">
+        <input type="text" class="search-box" placeholder="Search...">
+        <button class="btn" type="button">PRINT MANIFEST</button>
+        <span class="spacer"></span>
+        <label for="date-type">Collection Date</label>
+        <select id="date-type">
+          <option value="collection">Collection Date</option>
+          <option value="delivery">Delivery Date</option>
+        </select>
+        <input type="text" class="date-input" id="date-from" placeholder="DD/MM/YYYY" value="13/04/2026">
+        <span class="sep">&ndash;</span>
+        <input type="text" class="date-input" id="date-to" placeholder="DD/MM/YYYY" value="13/04/2026">
+        <button class="btn btn-dark" type="button" id="apply-filter">Apply</button>
+        <div class="view-toggles">
+          <button type="button" title="List view">&#9776;</button>
+          <button type="button" title="Email view">&#9993;</button>
+          <button type="button" title="Grid view">&#9638;</button>
+          <button type="button" title="Card view">&#9744;</button>
+        </div>
+      </div>
+
+      <table class="data-table" id="data-table">
+        <thead>
+          <tr>
+            <th class="col-check"><input type="checkbox" id="check-all"></th>
+            <th>Consignm... <span class="sort-icon">&#8597;</span></th>
+            <th>Collection Name <span class="sort-icon">&#8597;</span></th>
+            <th>Collecti... Date <span class="sort-icon">&#8597;</span></th>
+            <th>Surcharg... Codes <span class="sort-icon">&#8597;</span></th>
+            <th>Billing Units <span class="sort-icon">&#8597;</span></th>
+            <th>Total Spaces</th>
+            <th>Total Weight</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+      </table>
+
+      <div class="table-footer">
+        <div class="create-filter-link">Create Filter</div>
+        <div class="pagination" id="pagination"></div>
+      </div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
