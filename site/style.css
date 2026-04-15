@@ -250,6 +250,11 @@ button {
   margin-bottom: 20px;
   line-height: 1.5;
 }
+.dialog-error {
+  color: #c62828;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
 .dialog-actions {
   display: flex;
   flex-direction: column;
@@ -801,6 +806,56 @@ button {
 .loading-text {
   font-size: 13px;
   color: #666;
+}
+
+/* === Error Overlay === */
+.error-overlay {
+  position: absolute;
+  inset: 0;
+  background: #e8eaf6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  text-align: center;
+  padding: 20px;
+}
+.error-overlay-data {
+  background: rgba(255, 255, 255, 0.95);
+}
+.error-icon {
+  font-size: 44px;
+  margin-bottom: 14px;
+  color: #c62828;
+}
+.error-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 6px;
+}
+.error-detail {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 4px;
+}
+.error-corr {
+  font-size: 11px;
+  color: #999;
+  margin-bottom: 18px;
+  font-family: monospace;
+}
+.error-retry {
+  padding: 8px 24px;
+  border: 1px solid #bbb;
+  background: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: inherit;
+}
+.error-retry:hover {
+  background: #f0f0f0;
 }
 
 /* === Disabled Button States === */

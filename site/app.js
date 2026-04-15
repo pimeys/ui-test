@@ -85,6 +85,7 @@
   var DELAY_PAGE = 1800; // Full page content load (dashboard/consignment)
   var DELAY_DATA = 1200; // Data refresh (filter apply)
   var DELAY_PAGE_NAV = 700; // Table pagination
+  var ERROR_RATE = 0.01; // 1% of requests return HTTP 500
 
   // ========== Date Helpers ==========
 
@@ -458,6 +459,11 @@
 
   var pendingTimeout = null;
   var pendingHide = null;
+  var pendingError = null;
+
+  function shouldFail() {
+    return Math.random() < ERROR_RATE;
+  }
 
   function cancelPending() {
     if (pendingTimeout) {
@@ -467,6 +473,10 @@
     if (pendingHide) {
       pendingHide();
       pendingHide = null;
+    }
+    if (pendingError) {
+      pendingError();
+      pendingError = null;
     }
   }
 
@@ -480,6 +490,38 @@
       (msg || "Loading...") +
       "</div>";
     container.appendChild(overlay);
+    return function () {
+      if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    };
+  }
+
+  function showError(container, retryFn, isData) {
+    var overlay = document.createElement("div");
+    overlay.className = "error-overlay" + (isData ? " error-overlay-data" : "");
+    var corrId =
+      Math.random().toString(16).slice(2, 10) +
+      "-" +
+      Math.random().toString(16).slice(2, 6) +
+      "-" +
+      Math.random().toString(16).slice(2, 10);
+    overlay.innerHTML =
+      '<div class="error-icon">&#9888;</div>' +
+      '<div class="error-title">Sorry, something went wrong</div>' +
+      '<div class="error-detail">An unexpected error has occurred.</div>' +
+      '<div class="error-corr">Correlation ID: ' +
+      corrId +
+      "</div>" +
+      '<button class="error-retry" type="button">Try Again</button>';
+    container.appendChild(overlay);
+
+    overlay
+      .querySelector(".error-retry")
+      .addEventListener("click", function () {
+        if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+        pendingError = null;
+        retryFn();
+      });
+
     return function () {
       if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
     };
@@ -594,10 +636,24 @@
 
     pendingTimeout = setTimeout(function () {
       pendingTimeout = null;
-      renderTable(currentData, currentPage);
-      renderPagination(currentData.length, currentPage);
       pendingHide();
       pendingHide = null;
+      if (shouldFail()) {
+        pendingError = showError(
+          wrap,
+          function () {
+            onPageClick.call({
+              getAttribute: function () {
+                return String(currentPage);
+              },
+            });
+          },
+          true,
+        );
+        return;
+      }
+      renderTable(currentData, currentPage);
+      renderPagination(currentData.length, currentPage);
       wrap.scrollTop = 0;
     }, DELAY_PAGE_NAV);
   }
@@ -631,13 +687,17 @@
 
     pendingTimeout = setTimeout(function () {
       pendingTimeout = null;
+      pendingHide();
+      pendingHide = null;
+      if (shouldFail()) {
+        pendingError = showError(main, applyFilter);
+        return;
+      }
       currentData = generateRange(dpFromIso, dpToIso);
       currentPage = 1;
       renderStatusCards(computeStatus(currentData, dpFromIso, dpToIso));
       renderTable(currentData, currentPage);
       renderPagination(currentData.length, currentPage);
-      pendingHide();
-      pendingHide = null;
       var wrap = document.querySelector(".table-wrap");
       if (wrap) wrap.scrollTop = 0;
     }, DELAY_DATA);
@@ -672,10 +732,18 @@
         loginBtn.disabled = false;
         loginBtn.textContent = loginText;
 
+        if (shouldFail()) {
+          errorEl.textContent = "Service unavailable. Please try again later.";
+          errorEl.style.display = "block";
+          return;
+        }
+
         if (u === "username" && p === "password") {
+          errorEl.style.display = "none";
           dialogUser.textContent = u;
           overlay.classList.add("visible");
         } else {
+          errorEl.textContent = "Invalid username or password.";
           errorEl.style.display = "block";
         }
       }, DELAY_AUTH);
@@ -688,6 +756,21 @@
       btnCancel.disabled = true;
 
       setTimeout(function () {
+        if (shouldFail()) {
+          btnConfirm.disabled = false;
+          btnConfirm.textContent = "Confirm";
+          btnCancel.disabled = false;
+          var errMsg = document.getElementById("dialog-error");
+          if (!errMsg) {
+            errMsg = document.createElement("p");
+            errMsg.id = "dialog-error";
+            errMsg.className = "dialog-error";
+            var actions = document.querySelector(".dialog-actions");
+            actions.parentNode.insertBefore(errMsg, actions);
+          }
+          errMsg.textContent = "Service unavailable. Please try again.";
+          return;
+        }
         window.location.href = "dashboard.html";
       }, DELAY_SIGN_IN);
     });
@@ -701,17 +784,24 @@
 
   function initDashboard() {
     if (!requireAuth()) return;
+    loadDashboard();
+  }
 
+  function loadDashboard() {
     var main = document.querySelector(".main-content");
     var hide = showLoading(main);
 
     setTimeout(function () {
+      hide();
+      if (shouldFail()) {
+        showError(main, loadDashboard);
+        return;
+      }
       var h = new Date().getHours();
       var g =
         h < 12 ? "Good Morning" : h < 18 ? "Good Afternoon" : "Good Evening";
       var el = document.getElementById("greeting-text");
       if (el) el.textContent = g + ", Portal User.";
-      hide();
     }, DELAY_PAGE);
   }
 
@@ -770,16 +860,24 @@
     });
 
     // Show page loading overlay, then populate initial data
+    loadConsignmentPage();
+  }
+
+  function loadConsignmentPage() {
     var main = document.querySelector(".main-content");
-    var hidePageLoad = showLoading(main);
+    var hide = showLoading(main);
 
     setTimeout(function () {
+      hide();
+      if (shouldFail()) {
+        showError(main, loadConsignmentPage);
+        return;
+      }
       currentData = generateRange(dpFromIso, dpToIso);
       currentPage = 1;
       renderStatusCards(computeStatus(currentData, dpFromIso, dpToIso));
       renderTable(currentData, currentPage);
       renderPagination(currentData.length, currentPage);
-      hidePageLoad();
     }, DELAY_PAGE);
   }
 
