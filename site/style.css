@@ -249,8 +249,12 @@ button { font-family: inherit; }
 .sidebar-nav a:hover { background: #f5f5f5; }
 .sidebar-nav a.active {
   background: #ffeb3b;
+  color: #fff;
   font-weight: bold;
   border-left-color: #ffeb3b;
+}
+.sidebar-nav a.active .nav-icon {
+  color: #fff;
 }
 .sidebar-nav .nav-icon {
   width: 22px;

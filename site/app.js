@@ -99,13 +99,20 @@
     return p[2] + "/" + p[1] + "/" + p[0].slice(2);
   }
 
+  /** Build YYYY-MM-DD from a local Date (avoids UTC shift from toISOString) */
+  function localIso(d) {
+    return (
+      d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate())
+    );
+  }
+
   /** Iterate dates from..to (inclusive), return array of ISO strings */
   function dateRange(fromIso, toIso) {
     var out = [];
     var d = new Date(fromIso + "T00:00:00");
     var end = new Date(toIso + "T00:00:00");
     while (d <= end) {
-      out.push(d.toISOString().slice(0, 10));
+      out.push(localIso(d));
       d.setDate(d.getDate() + 1);
     }
     return out;
@@ -209,17 +216,30 @@
   // ========== Date Picker State ==========
 
   var MONTHS = [
-    "January","February","March","April","May","June",
-    "July","August","September","October","November","December"
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
 
-  var dpFromIso = "2026-04-13";
-  var dpToIso = "2026-04-13";
+  var dpFromIso = "2026-04-15";
+  var dpToIso = "2026-04-15";
   var dpViewYear = 2026;
   var dpViewMonth = 3; // 0-indexed, 3 = April
   var dpSelecting = "from"; // which field the next calendar click sets
+  var dpHoverIso = ""; // date being hovered during "to" selection
 
-  function pad2(n) { return n < 10 ? "0" + n : String(n); }
+  function pad2(n) {
+    return n < 10 ? "0" + n : String(n);
+  }
 
   function fmtTrigger(fromIso, toIso) {
     return fmtDateShort(fromIso) + " \u2013 " + fmtDateShort(toIso);
@@ -232,7 +252,7 @@
     var firstDay = new Date(dpViewYear, dpViewMonth, 1).getDay();
     var startCol = (firstDay + 6) % 7; // Mon=0
     var daysInMonth = new Date(dpViewYear, dpViewMonth + 1, 0).getDate();
-    var todayIso = new Date().toISOString().slice(0, 10);
+    var todayIso = localIso(new Date());
 
     var html = '<div class="dp-nav">';
     html += '<button type="button" id="dp-prev">&lsaquo;</button>';
@@ -241,7 +261,8 @@
     html += "</div>";
 
     html += '<table class="dp-grid"><thead><tr>';
-    html += "<th>Mo</th><th>Tu</th><th>We</th><th>Th</th><th>Fr</th><th>Sa</th><th>Su</th>";
+    html +=
+      "<th>Mo</th><th>Tu</th><th>We</th><th>Th</th><th>Fr</th><th>Sa</th><th>Su</th>";
     html += "</tr></thead><tbody>";
 
     var day = 1;
@@ -253,10 +274,23 @@
         } else {
           var iso = dpViewYear + "-" + pad2(dpViewMonth + 1) + "-" + pad2(day);
           var cls = "dp-day";
-          if (iso === dpFromIso || iso === dpToIso) cls += " dp-sel";
-          else if (dpFromIso && dpToIso && iso > dpFromIso && iso < dpToIso) cls += " dp-in-range";
+          var effTo =
+            dpSelecting === "to" && dpHoverIso && dpHoverIso >= dpFromIso
+              ? dpHoverIso
+              : dpToIso;
+          if (dpFromIso && iso === dpFromIso) cls += " dp-sel";
+          else if (effTo && iso === effTo) cls += " dp-sel";
+          else if (dpFromIso && effTo && iso > dpFromIso && iso < effTo)
+            cls += " dp-in-range";
           if (iso === todayIso) cls += " dp-today";
-          html += '<td><div class="' + cls + '" data-date="' + iso + '">' + day + "</div></td>";
+          html +=
+            '<td><div class="' +
+            cls +
+            '" data-date="' +
+            iso +
+            '">' +
+            day +
+            "</div></td>";
           day++;
         }
       }
@@ -268,12 +302,18 @@
     // Bind nav
     document.getElementById("dp-prev").addEventListener("click", function () {
       dpViewMonth--;
-      if (dpViewMonth < 0) { dpViewMonth = 11; dpViewYear--; }
+      if (dpViewMonth < 0) {
+        dpViewMonth = 11;
+        dpViewYear--;
+      }
       renderCalendar();
     });
     document.getElementById("dp-next").addEventListener("click", function () {
       dpViewMonth++;
-      if (dpViewMonth > 11) { dpViewMonth = 0; dpViewYear++; }
+      if (dpViewMonth > 11) {
+        dpViewMonth = 0;
+        dpViewYear++;
+      }
       renderCalendar();
     });
 
@@ -281,39 +321,105 @@
     var days = el.querySelectorAll(".dp-day");
     for (var i = 0; i < days.length; i++) {
       days[i].addEventListener("click", onDayClick);
+      days[i].addEventListener("mouseenter", onDayHover);
     }
   }
 
   function onDayClick() {
     var iso = this.getAttribute("data-date");
     if (!iso) return;
-    var display = fmtDateLong(iso);
 
     if (dpSelecting === "from") {
+      // First click: set start date, enter range-selection mode
       dpFromIso = iso;
-      dpToIso = iso;
+      dpToIso = "";
+      dpHoverIso = "";
       dpSelecting = "to";
+
+      var fromEl = document.getElementById("dp-from");
+      var toEl = document.getElementById("dp-to");
+      if (fromEl) fromEl.value = fmtDateLong(dpFromIso);
+      if (toEl) toEl.value = "";
+
+      updateRangeClasses();
     } else {
+      // Second click: set end date
       if (iso >= dpFromIso) {
         dpToIso = iso;
       } else {
+        // Clicked before start — make this the new start, stay in "to" mode
         dpFromIso = iso;
-        dpToIso = iso;
+        dpToIso = "";
+        dpHoverIso = "";
+
+        var fromEl2 = document.getElementById("dp-from");
+        var toEl2 = document.getElementById("dp-to");
+        if (fromEl2) fromEl2.value = fmtDateLong(dpFromIso);
+        if (toEl2) toEl2.value = "";
+
+        updateRangeClasses();
+        return;
       }
+
+      dpHoverIso = "";
       dpSelecting = "from";
+
+      var fromEl3 = document.getElementById("dp-from");
+      var toEl3 = document.getElementById("dp-to");
+      if (fromEl3) fromEl3.value = fmtDateLong(dpFromIso);
+      if (toEl3) toEl3.value = fmtDateLong(dpToIso);
+
+      updateRangeClasses();
+    }
+  }
+
+  /** Update range highlight classes on existing DOM without re-rendering */
+  function updateRangeClasses() {
+    var el = document.getElementById("dp-calendar");
+    if (!el) return;
+    var days = el.querySelectorAll(".dp-day");
+    var effTo =
+      dpSelecting === "to" && dpHoverIso && dpHoverIso >= dpFromIso
+        ? dpHoverIso
+        : dpToIso;
+
+    for (var i = 0; i < days.length; i++) {
+      var iso = days[i].getAttribute("data-date");
+      days[i].classList.remove("dp-sel", "dp-in-range");
+
+      if (dpFromIso && iso === dpFromIso) {
+        days[i].classList.add("dp-sel");
+      } else if (effTo && iso === effTo) {
+        days[i].classList.add("dp-sel");
+      } else if (dpFromIso && effTo && iso > dpFromIso && iso < effTo) {
+        days[i].classList.add("dp-in-range");
+      }
+    }
+  }
+
+  function onDayHover() {
+    if (dpSelecting !== "to") return;
+    var iso = this.getAttribute("data-date");
+    if (!iso) return;
+
+    if (iso < dpFromIso) {
+      // Hovering before start — clear range preview
+      dpHoverIso = "";
+      updateRangeClasses();
+      var toEl = document.getElementById("dp-to");
+      if (toEl) toEl.value = "";
+      return;
     }
 
-    // Sync text fields
-    var fromEl = document.getElementById("dp-from");
-    var toEl = document.getElementById("dp-to");
-    if (fromEl) fromEl.value = fmtDateLong(dpFromIso);
-    if (toEl) toEl.value = fmtDateLong(dpToIso);
-
-    renderCalendar();
+    dpHoverIso = iso;
+    updateRangeClasses();
+    var toEl2 = document.getElementById("dp-to");
+    if (toEl2) toEl2.value = fmtDateLong(iso);
   }
 
   /** YYYY-MM-DD -> DD/MM/YYYY */
   function fmtDateLong(iso) {
+    if (!iso) return "";
     var p = iso.split("-");
     return p[2] + "/" + p[1] + "/" + p[0];
   }
@@ -326,6 +432,7 @@
     dpViewYear = parseInt(parts[0], 10);
     dpViewMonth = parseInt(parts[1], 10) - 1;
     dpSelecting = "from";
+    dpHoverIso = "";
 
     document.getElementById("dp-from").value = fmtDateLong(dpFromIso);
     document.getElementById("dp-to").value = fmtDateLong(dpToIso);
@@ -381,13 +488,27 @@
       html +=
         "<tr>" +
         '<td class="col-check"><input type="checkbox"></td>' +
-        "<td>" + r.id + "</td>" +
-        "<td>" + r.name + "</td>" +
-        "<td>" + r.date + "</td>" +
-        "<td>" + r.surcharge + "</td>" +
-        "<td>" + r.billing + "</td>" +
-        "<td>" + r.spaces + "</td>" +
-        "<td>" + r.weight + "</td>" +
+        "<td>" +
+        r.id +
+        "</td>" +
+        "<td>" +
+        r.name +
+        "</td>" +
+        "<td>" +
+        r.date +
+        "</td>" +
+        "<td>" +
+        r.surcharge +
+        "</td>" +
+        "<td>" +
+        r.billing +
+        "</td>" +
+        "<td>" +
+        r.spaces +
+        "</td>" +
+        "<td>" +
+        r.weight +
+        "</td>" +
         '<td class="col-actions">' +
         '<button title="Edit">&#9998;</button>' +
         '<button title="View">&#9673;</button>' +
@@ -408,7 +529,11 @@
       html +=
         '<button class="page-btn' +
         (i === page ? " active" : "") +
-        '" data-p="' + i + '">' + i + "</button>";
+        '" data-p="' +
+        i +
+        '">' +
+        i +
+        "</button>";
     }
     el.innerHTML = html;
 
@@ -502,7 +627,8 @@
   function initDashboard() {
     if (!requireAuth()) return;
     var h = new Date().getHours();
-    var g = h < 12 ? "Good Morning" : h < 18 ? "Good Afternoon" : "Good Evening";
+    var g =
+      h < 12 ? "Good Morning" : h < 18 ? "Good Afternoon" : "Good Evening";
     var el = document.getElementById("greeting-text");
     if (el) el.textContent = g + ", Portal User.";
   }
@@ -513,15 +639,17 @@
     if (!requireAuth()) return;
 
     // Date range trigger opens the picker
-    document.getElementById("date-trigger").addEventListener("click", function (e) {
-      e.stopPropagation();
-      var drop = document.getElementById("date-picker");
-      if (drop.classList.contains("open")) {
-        closeDatePicker();
-      } else {
-        openDatePicker();
-      }
-    });
+    document
+      .getElementById("date-trigger")
+      .addEventListener("click", function (e) {
+        e.stopPropagation();
+        var drop = document.getElementById("date-picker");
+        if (drop.classList.contains("open")) {
+          closeDatePicker();
+        } else {
+          openDatePicker();
+        }
+      });
 
     // Apply / Cancel inside the picker
     document.getElementById("dp-apply").addEventListener("click", function () {
@@ -535,15 +663,20 @@
     var dpFrom = document.getElementById("dp-from");
     var dpTo = document.getElementById("dp-to");
     function onEnter(e) {
-      if (e.key === "Enter") { e.preventDefault(); applyFilter(); }
+      if (e.key === "Enter") {
+        e.preventDefault();
+        applyFilter();
+      }
     }
     dpFrom.addEventListener("keydown", onEnter);
     dpTo.addEventListener("keydown", onEnter);
 
     // Prevent clicks inside picker from closing it
-    document.getElementById("date-picker").addEventListener("click", function (e) {
-      e.stopPropagation();
-    });
+    document
+      .getElementById("date-picker")
+      .addEventListener("click", function (e) {
+        e.stopPropagation();
+      });
 
     // Click outside closes the picker
     document.addEventListener("click", function () {
