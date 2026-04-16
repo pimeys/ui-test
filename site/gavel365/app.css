@@ -111,44 +111,17 @@ a:hover { text-decoration: underline; }
   bottom: 0;
   z-index: 90;
   display: flex;
+  background: rgba(0,0,0,0.15);
 }
 .menu-sidebar {
-  width: 280px;
+  width: 320px;
   background: #1a3a5c;
   color: #fff;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
 }
-.menu-sidebar-top {
-  padding: 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-.menu-logo { display: flex; align-items: center; gap: 6px; }
-.menu-search-icon {
-  background: none;
-  border: none;
-  color: #ccc;
-  font-size: 16px;
-  cursor: pointer;
-  margin-left: auto;
-}
-.menu-new-person-btn {
-  background: #e8740c;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  padding: 8px 16px;
-  font-size: 13px;
-  cursor: pointer;
-  width: 100%;
-  margin-top: 8px;
-}
-.menu-new-person-btn:hover { background: #d06600; }
-.menu-nav { flex: 1; padding: 8px 0; }
+.menu-nav { flex: 1; padding: 16px 0; }
 .menu-nav-item {
   display: flex;
   align-items: center;
@@ -168,11 +141,12 @@ a:hover { text-decoration: underline; }
 }
 .menu-content {
   flex: 1;
-  background: rgba(0,0,0,0.5);
+  background: #fff;
   padding: 40px 60px;
+  border-left: 1px solid #e0e0e0;
 }
 .menu-question {
-  color: #c4a265;
+  color: #b8926a;
   font-size: 28px;
   font-weight: 300;
   margin-bottom: 20px;
@@ -200,7 +174,7 @@ a:hover { text-decoration: underline; }
   gap: 80px;
 }
 .menu-section h3 {
-  color: #c4a265;
+  color: #1a3a5c;
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 1px;
@@ -208,14 +182,14 @@ a:hover { text-decoration: underline; }
 }
 .menu-section a {
   display: block;
-  color: #fff;
+  color: #333;
   padding: 6px 0;
   font-size: 14px;
 }
 .menu-section a:hover { color: #e8740c; text-decoration: none; }
 .menu-section hr {
   border: none;
-  border-top: 1px solid rgba(255,255,255,0.2);
+  border-top: 1px solid #e0e0e0;
   margin: 12px 0;
 }
 
