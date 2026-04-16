@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GAVEL</title>
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <!-- ============ TOP HEADER BAR ============ -->
+  <header id="appHeader">
+    <div class="header-left">
+      <button id="hamburgerBtn" class="hamburger-btn" title="Menu">&#9776;</button>
+      <div class="header-logo">
+        <div class="logo-icon-sm"></div>
+        <span class="logo-text-sm">GAVEL</span>
+      </div>
+    </div>
+    <div class="header-center" id="headerTitle"></div>
+    <div class="header-right">
+      <button class="icon-btn" title="Notifications">&#128276;</button>
+      <button class="icon-btn" title="Help">&#63;</button>
+      <div class="avatar" title="Jane Doe">JD</div>
+    </div>
+  </header>
+
+  <!-- ============ HAMBURGER MENU OVERLAY ============ -->
+  <div id="menuOverlay" class="menu-overlay hidden">
+    <div class="menu-sidebar">
+      <div class="menu-sidebar-top">
+        <div class="menu-logo">
+          <div class="logo-icon-sm"></div>
+          <span class="logo-text-sm">GAVEL</span>
+        </div>
+        <button class="menu-search-icon" title="Search">&#128269;</button>
+        <button class="menu-new-person-btn" onclick="navigateTo('/people'); showNewPersonForm(); closeMenu();">New Person</button>
+      </div>
+      <nav class="menu-nav">
+        <a href="#" class="menu-nav-item active" onclick="navigateTo('/'); closeMenu(); return false;">
+          <span class="nav-icon">&#127968;</span> Home
+        </a>
+        <a href="#" class="menu-nav-item" onclick="return false;">
+          <span class="nav-icon">&#128178;</span> Accounting
+        </a>
+        <a href="#" class="menu-nav-item" onclick="return false;">
+          <span class="nav-icon">&#128202;</span> Reports
+        </a>
+        <a href="#" class="menu-nav-item" onclick="return false;">
+          <span class="nav-icon">&#128230;</span> App Marketplace
+        </a>
+        <a href="#" class="menu-nav-item" onclick="return false;">
+          <span class="nav-icon">&#8943;</span> Other
+        </a>
+      </nav>
+      <div class="menu-sidebar-bottom">
+        <a href="#" class="menu-nav-item" onclick="return false;">
+          <span class="nav-icon">&#10067;</span> Help & Support
+        </a>
+        <a href="#" class="menu-nav-item" onclick="return false;">
+          <span class="nav-icon">&#9881;</span> Settings
+        </a>
+        <a href="#" class="menu-nav-item" onclick="return false;">
+          <span class="nav-icon">&#8505;</span> About
+        </a>
+      </div>
+    </div>
+    <div class="menu-content">
+      <h2 class="menu-question">What are you trying to find?</h2>
+      <div class="menu-search-bar">
+        <span>&#128269;</span>
+        <input type="text" placeholder="Search menu items...">
+      </div>
+      <div class="menu-sections">
+        <div class="menu-section">
+          <h3>MATTER LIST</h3>
+          <a href="#" onclick="navigateTo('/matters'); closeMenu(); return false;">View Matters</a>
+        </div>
+        <div class="menu-section">
+          <h3>CARDS</h3>
+          <a href="#" onclick="return false;">View Cards</a>
+          <a href="#" onclick="navigateTo('/people'); closeMenu(); return false;">View People</a>
+          <hr>
+          <a href="#" onclick="return false;">Conflict Check</a>
+        </div>
+        <div class="menu-section">
+          <h3>LAWCONNECT</h3>
+          <a href="#" onclick="return false;">View Shared Items</a>
+          <a href="#" onclick="return false;">View All Requests</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ VIEW: MATTER DETAILS (default landing) ============ -->
+  <div id="view-matter-detail" class="view">
+    <div class="sub-header">
+      <a href="#" onclick="navigateTo('/matters'); return false;" class="back-link">&larr; Matters</a>
+      <a href="#" class="sub-tab active">Details & Correspondence</a>
+      <a href="#" class="sub-tab">Calendar & Tasks</a>
+      <a href="#" class="sub-tab">Financial Summary</a>
+      <a href="#" class="sub-tab">Time & Fees</a>
+      <a href="#" class="sub-tab">More &#9662;</a>
+    </div>
+    <div class="toolbar">
+      <button class="toolbar-btn"><span>&#128196;</span><br>New Document</button>
+      <button class="toolbar-btn"><span>&#9993;</span><br>New Email</button>
+      <button class="toolbar-btn"><span>&#128203;</span><br>Forms & Templates</button>
+      <button class="toolbar-btn"><span>&#128172;</span><br>New Comment</button>
+      <button class="toolbar-btn"><span>&#8593;</span><br>Import</button>
+      <button class="toolbar-btn"><span>&#128193;</span><br>New Folder</button>
+      <button class="toolbar-btn"><span>&#9202;</span><br>New Time Entry</button>
+      <button class="toolbar-btn"><span>&#128176;</span><br>New Fee</button>
+      <button class="toolbar-btn"><span>&#128100;</span><br>Book Client</button>
+      <button class="toolbar-btn"><span>&#128101;</span><br>Open Team</button>
+      <button class="toolbar-btn"><span>&#128228;</span><br>Send Document</button>
+      <button class="toolbar-btn"><span>&#128222;</span><br>Call</button>
+    </div>
+    <div class="matter-detail-body">
+      <div class="matter-detail-sidebar">
+        <h3>Details</h3>
+        <div class="detail-field"><strong>GAVEL-0007</strong> <span class="badge badge-orange">RETURN DATE</span></div>
+        <div class="detail-field">Jane Doe <span class="gear-icon">&#9881;</span></div>
+        <div class="detail-section">
+          <h4>Respondent</h4>
+          <p>Frank DeLuca</p>
+          <div class="detail-label">Respondent role</div>
+          <div class="detail-value">Landlord</div>
+          <div class="detail-label">Matter Type</div>
+          <div class="detail-value">Landlord - Tenant [NY]</div>
+        </div>
+        <div class="detail-section">
+          <h4>Petitioner</h4>
+          <p>Elena Petrova</p>
+          <div class="detail-label">Role</div>
+          <div class="detail-value">Tenant</div>
+          <div class="detail-label">Petitioner's Attorney</div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label">Property</div>
+          <div class="detail-value">Revere, 737 Revere, # 2, Bronx, NY 10465</div>
+          <div class="detail-label">Lease details</div>
+          <div class="detail-value">Form of lease: Written; Lease term: 1 year; Lease date: 09/10/2024</div>
+          <div class="detail-label">Eviction grounds details</div>
+        </div>
+      </div>
+      <div class="matter-detail-main">
+        <h3>Correspondence</h3>
+        <div class="correspondence-header">
+          <input type="text" placeholder="Search correspondence" class="search-input">
+          <button class="filter-btn">&#9776; Filter &#9662;</button>
+          <button class="icon-btn">&#8635;</button>
+        </div>
+        <table class="correspondence-table">
+          <thead>
+            <tr><th>TYPE</th><th>ITEM</th><th>STAFF</th><th>CREATED &#8595;</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="type-icon folder">&#128193;</span></td>
+              <td>Client Portal <span class="badge badge-blue">SHARED</span></td>
+              <td></td><td></td>
+            </tr>
+            <tr>
+              <td><span class="type-icon email">&#9993;</span></td>
+              <td>DeLuca - Utility Bill repaid <span class="badge badge-green">RECV.</span><br>
+                <span class="sub-text">From: frank@testpremium.net</span></td>
+              <td><span class="avatar-sm">JD</span></td>
+              <td>Mar 14 2026</td>
+            </tr>
+            <tr>
+              <td><span class="type-icon email">&#9993;</span></td>
+              <td>FW: DELUCA <span class="badge badge-green">RECV.</span><br>
+                <span class="sub-text">From: frank@testpremium.net</span></td>
+              <td><span class="avatar-sm">JD</span></td>
+              <td>Mar 14 2026</td>
+            </tr>
+            <tr>
+              <td><span class="type-icon email">&#9993;</span></td>
+              <td>New Collaboration Folder(s) ha...</td>
+              <td><span class="avatar-sm">JD</span></td>
+              <td>Mar 7 2026</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ VIEW: PEOPLE LIST ============ -->
+  <div id="view-people" class="view hidden">
+    <div class="people-header">
+      <div class="people-search-wrap">
+        <span class="search-icon">&#128269;</span>
+        <input type="text" id="peopleSearch" placeholder="" class="people-search">
+        <button id="peopleSearchClear" class="search-clear hidden">&times;</button>
+      </div>
+      <button class="btn-primary" id="newPersonBtn">New Person</button>
+      <div class="group-btn">&#9776; Group People &#9662;</div>
+    </div>
+    <div class="people-body">
+      <div class="people-list" id="peopleList">
+        <table class="people-table">
+          <thead>
+            <tr>
+              <th>TITLE</th>
+              <th>FIRST NAMES</th>
+              <th>LAST NAME &#8593;</th>
+              <th><span class="gear-icon">&#9881;</span></th>
+            </tr>
+          </thead>
+          <tbody id="peopleTableBody"></tbody>
+        </table>
+        <div class="people-count" id="peopleCount"></div>
+      </div>
+      <div class="people-detail" id="peopleDetail">
+        <div class="no-selection">No results found</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ VIEW: NEW PERSON FORM ============ -->
+  <div id="view-new-person" class="view hidden">
+    <div class="people-header">
+      <div class="people-search-wrap">
+        <span class="search-icon">&#128269;</span>
+        <input type="text" placeholder="" class="people-search" disabled>
+      </div>
+      <button class="btn-primary">New Person</button>
+      <div style="flex:1"></div>
+      <div class="apps-btn">&#9783; Apps &#9662;</div>
+    </div>
+    <div class="person-form-body">
+      <div class="people-list" id="newPersonPeopleList">
+        <table class="people-table">
+          <thead>
+            <tr><th>TITLE</th><th>FIRST NAMES</th><th>LAST NAME &#8593;</th><th><span class="gear-icon">&#9881;</span></th></tr>
+          </thead>
+          <tbody id="newPersonPeopleTable"></tbody>
+        </table>
+        <div class="people-count" id="newPersonPeopleCount"></div>
+      </div>
+      <div class="person-form-main">
+        <h2 id="personFormTitle" class="person-name-heading">New Person</h2>
+        <div class="person-form-tabs">
+          <a href="#" class="form-tab active">General</a>
+          <a href="#" class="form-tab">Other Details</a>
+          <a href="#" class="form-tab">Additional Fields</a>
+          <a href="#" class="form-tab">Cards</a>
+          <a href="#" class="form-tab">Matters</a>
+        </div>
+        <div class="person-form-fields">
+          <div class="form-row three-col">
+            <div class="form-group">
+              <label>Title</label>
+              <select><option value="">Select...</option><option>Mr</option><option>Ms</option><option>Mrs</option><option>Dr</option></select>
+            </div>
+            <div class="form-group">
+              <label>Gender</label>
+              <select><option value="">Select...</option><option>Male</option><option>Female</option><option>Other</option></select>
+            </div>
+            <div class="form-group">
+              <label>Relationship status</label>
+              <select><option value="">Select...</option><option>Single</option><option>Married</option><option>Divorced</option><option>Widowed</option></select>
+            </div>
+          </div>
+          <div class="form-row two-col">
+            <div class="form-group">
+              <label>First names</label>
+              <input type="text" id="newPersonFirst" placeholder="">
+            </div>
+            <div class="form-group">
+              <label>Last name</label>
+              <input type="text" id="newPersonLast" placeholder="">
+            </div>
+          </div>
+          <div class="form-row two-col">
+            <div class="form-group">
+              <label>Previous names</label>
+              <input type="text" placeholder="">
+            </div>
+            <div class="form-group">
+              <label>Suffix</label>
+              <input type="text" placeholder="">
+            </div>
+          </div>
+          <h3 class="section-heading">Contact</h3>
+          <div class="form-group">
+            <label>Email</label>
+            <div class="form-row two-col">
+              <select style="width:120px"><option>Email</option></select>
+              <input type="email" id="newPersonEmail" placeholder="">
+            </div>
+          </div>
+          <div class="form-row two-col">
+            <div class="form-group">
+              <label>Phone</label>
+              <div class="form-row two-col">
+                <select style="width:120px"><option>Phone</option><option>Mobile</option><option>Work</option></select>
+                <input type="text" id="newPersonPhone" placeholder="">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Web</label>
+              <div class="form-row two-col">
+                <select style="width:120px"><option>Web</option></select>
+                <input type="text" placeholder="">
+              </div>
+            </div>
+          </div>
+          <h3 class="section-heading">Birth / Death</h3>
+          <div class="form-row two-col">
+            <div class="form-group">
+              <label>Date of birth</label>
+              <input type="text" placeholder="MM/DD/YYYY">
+            </div>
+            <div class="form-group">
+              <label>Place of birth</label>
+              <input type="text" placeholder="">
+            </div>
+          </div>
+          <div class="form-row two-col">
+            <div class="form-group">
+              <label>Country of birth</label>
+              <input type="text" placeholder="">
+            </div>
+            <div class="form-group">
+              <label>Nationality</label>
+              <select><option value="">Select...</option></select>
+            </div>
+          </div>
+        </div>
+        <div class="person-form-footer">
+          <a href="#" class="undo-link" id="personUndoLink" style="display:none">Undo</a>
+          <a href="#" class="delete-link" id="personDeleteLink" style="display:none">Delete</a>
+          <button class="btn-primary btn-save" id="savePersonBtn">Save</button>
+        </div>
+      </div>
+    </div>
+    <!-- Success toast -->
+    <div id="personSuccessToast" class="toast hidden">
+      <span class="toast-icon">&#9989;</span>
+      <div>
+        <strong>Success</strong><br>
+        Person saved successfully.
+      </div>
+      <button class="toast-close" onclick="this.parentElement.classList.add('hidden')">&times;</button>
+    </div>
+  </div>
+
+  <!-- ============ VIEW: MATTERS LIST ============ -->
+  <div id="view-matters" class="view hidden">
+    <div class="matters-header">
+      <input type="text" id="mattersSearch" placeholder="Search matters" class="matters-search">
+      <a href="#" class="advanced-search">Advanced Search</a>
+      <button class="btn-primary" id="newMatterBtn">New Matter</button>
+      <div class="group-btn">&#9776; Group Matters &#9662;</div>
+      <div class="group-btn">&#9776; Current Matters &#9662;</div>
+    </div>
+    <table class="matters-table">
+      <thead>
+        <tr>
+          <th>NO. &#8593;</th>
+          <th>CLIENT & DETAILS</th>
+          <th>ORIG.</th>
+          <th>STATUS</th>
+          <th><span class="gear-icon">&#9881;</span></th>
+        </tr>
+      </thead>
+      <tbody id="mattersTableBody"></tbody>
+    </table>
+  </div>
+
+  <!-- ============ DIALOG: NEW MATTER ============ -->
+  <div id="newMatterOverlay" class="dialog-overlay hidden">
+    <div class="new-matter-dialog">
+      <div class="dialog-header">
+        <div class="dialog-steps">
+          <span class="step-label">New Matter</span>
+          <span class="step active"><span class="step-dot filled"></span> Matter Type & Parties</span>
+          <span class="step-separator">&mdash;&mdash;</span>
+          <span class="step"><span class="step-dot"></span> Matter Details</span>
+          <span class="step-separator">&mdash;&mdash;</span>
+          <span class="step"><span class="step-dot"></span> Client Details</span>
+        </div>
+        <button class="dialog-close" onclick="closeNewMatterDialog()">&times;</button>
+      </div>
+      <div class="dialog-body">
+        <div class="dialog-left">
+          <h3>Matter Type</h3>
+          <p class="dialog-subtitle">Select Matter Type</p>
+          <div class="matter-type-search-row">
+            <div class="matter-type-search-wrap">
+              <span>&#128269;</span>
+              <input type="text" id="matterTypeSearch" placeholder="Search matter types">
+              <button id="matterTypeSearchClear" class="search-clear hidden">&times;</button>
+            </div>
+            <select class="jurisdiction-select">
+              <option>NY</option>
+              <option>CA</option>
+              <option>TX</option>
+              <option>FL</option>
+            </select>
+          </div>
+          <div class="matter-type-tree" id="matterTypeTree"></div>
+        </div>
+        <div class="dialog-right">
+          <h3>Parties</h3>
+          <div class="form-group">
+            <label>Client</label>
+            <!-- Role selector — native <select>, the element the agent keeps trying to type into -->
+            <select class="full-select" id="clientRoleSelect">
+              <option value="Client">Client</option>
+            </select>
+            <!-- Person assignment — subtle combo-select below the role dropdown.
+                 In the real LEAP app this field is barely visible and the agent never
+                 discovers it. The search panel does NOT auto-focus. -->
+            <div class="combo-select client-person-field" id="clientCombo" tabindex="0">
+              <span class="combo-value placeholder" id="clientComboValue"></span>
+              <span class="combo-arrow">&#9662;</span>
+              <div class="combo-panel hidden" id="clientComboPanel">
+                <div class="combo-search-row">
+                  <input type="text" id="partyClientSearch" placeholder="Type to search..." class="combo-search-input" autocomplete="off">
+                </div>
+                <div class="combo-options" id="partyClientDropdown"></div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Other Side</label>
+            <select id="partyOtherSide" class="full-select"><option value=""></option></select>
+          </div>
+          <div class="form-group">
+            <label>Other Side's Attorney</label>
+            <select id="partyOtherAttorney" class="full-select"><option value=""></option></select>
+          </div>
+          <div class="form-group">
+            <label>Other Side's Insurer</label>
+            <select class="full-select"><option value=""></option></select>
+          </div>
+          <div class="form-group" style="margin-top: 24px;">
+            <h3>Matter Description</h3>
+            <textarea id="matterDescription" rows="4" placeholder=""></textarea>
+          </div>
+          <div class="auto-checkbox">
+            <input type="checkbox" id="matterAutoDesc" checked>
+            <label for="matterAutoDesc">Auto</label>
+          </div>
+          <div class="matter-type-info" id="matterTypeInfo"></div>
+        </div>
+      </div>
+      <div class="dialog-footer">
+        <button class="btn-secondary" onclick="closeNewMatterDialog()">Cancel</button>
+        <button class="btn-primary" id="matterDetailsBtn" disabled>Matter Details &rarr;</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

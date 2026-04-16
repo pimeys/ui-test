@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leads - CaseDock</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      font-size: 14px;
+      color: #333;
+      background: #fff;
+    }
+
+    /* ========== TOP BAR ========== */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 6px 20px;
+      font-size: 13px;
+      color: #666;
+      background: #fff;
+    }
+    .top-bar a { color: #2a9d8f; text-decoration: none; margin-left: 12px; }
+    .top-bar a:hover { text-decoration: underline; }
+
+    /* ========== NAV BAR ========== */
+    .navbar {
+      display: flex;
+      align-items: center;
+      background: #2a9d8f;
+      padding: 0 20px;
+      height: 52px;
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-right: 32px;
+    }
+    .nav-brand-icon {
+      width: 32px;
+      height: 32px;
+      background: #fff;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .nav-brand-icon::after {
+      content: '\\2696';
+      font-size: 18px;
+      color: #2a9d8f;
+    }
+    .nav-brand-text {
+      color: #fff;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+    .nav-links { display: flex; gap: 4px; flex: 1; }
+    .nav-link {
+      color: #fff;
+      padding: 14px 16px;
+      font-size: 14px;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 4px;
+      transition: background 0.15s;
+    }
+    .nav-link:hover { background: rgba(255,255,255,0.15); }
+    .nav-link.active { background: rgba(255,255,255,0.2); font-weight: 600; }
+    .nav-link-icon { font-size: 16px; }
+
+    /* ========== CONTENT ========== */
+    .content { padding: 20px; }
+    .content-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .filter-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: #fff;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .filter-btn:hover { background: #f5f5f5; }
+    .search-wrap {
+      flex: 1;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 8px;
+    }
+    .search-input {
+      padding: 8px 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 13px;
+      width: 250px;
+      outline: none;
+    }
+    .search-input:focus { border-color: #2a9d8f; }
+    .search-btn {
+      padding: 8px 12px;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .export-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: #fff;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .export-btn:hover { background: #f5f5f5; }
+
+    /* ========== LEADS TABLE ========== */
+    .leads-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .leads-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 20px;
+      font-weight: 600;
+    }
+    .leads-title-icon { font-size: 22px; color: #666; }
+    .leads-meta { display: flex; align-items: center; gap: 12px; font-size: 13px; color: #666; }
+    .scroll-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .toggle-track {
+      width: 36px;
+      height: 20px;
+      background: #2a9d8f;
+      border-radius: 10px;
+      position: relative;
+      cursor: pointer;
+    }
+    .toggle-thumb {
+      width: 16px;
+      height: 16px;
+      background: #fff;
+      border-radius: 50%;
+      position: absolute;
+      top: 2px;
+      left: 18px;
+      transition: left 0.2s;
+    }
+
+    .leads-table { width: 100%; border-collapse: collapse; }
+    .leads-table th {
+      text-align: left;
+      font-size: 12px;
+      font-weight: 600;
+      color: #666;
+      padding: 10px 12px;
+      border-bottom: 2px solid #e0e0e0;
+      white-space: nowrap;
+    }
+    .leads-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+    .leads-table tr:hover td { background: #f9fffe; }
+    .leads-table .row-num { color: #999; width: 30px; }
+    .leads-table .lead-id a { color: #2a9d8f; }
+    .leads-table .lead-phone a { color: #2a9d8f; text-decoration: none; }
+    .leads-table .lead-email a { color: #2a9d8f; text-decoration: none; }
+    .leads-table td input[type="checkbox"] { width: 16px; height: 16px; }
+
+    /* ========== EXPORT DIALOG ========== */
+    .dialog-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .dialog-overlay.visible { display: flex; }
+    .export-dialog {
+      background: #fff;
+      border-radius: 8px;
+      padding: 32px;
+      width: 500px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    }
+    .export-dialog h2 {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 22px;
+      margin-bottom: 16px;
+    }
+    .export-dialog p { color: #666; margin-bottom: 20px; font-size: 14px; }
+    .period-row {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      margin-bottom: 20px;
+    }
+    .period-label { font-weight: 600; font-size: 14px; }
+    .period-options { display: flex; flex-direction: column; gap: 8px; }
+    .period-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .period-option input[type="radio"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #2a9d8f;
+    }
+    .period-note { font-size: 12px; color: #999; margin-bottom: 24px; }
+    .export-dialog-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+    .btn-cancel {
+      padding: 10px 24px;
+      border: none;
+      background: none;
+      font-size: 14px;
+      cursor: pointer;
+      color: #666;
+    }
+    .btn-cancel:hover { color: #333; }
+    .btn-export {
+      padding: 10px 24px;
+      background: #2a9d8f;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-export:hover { background: #238b80; }
+
+    /* ========== CHAT WIDGET ========== */
+    .chat-widget {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 56px;
+      height: 56px;
+      background: #2a9d8f;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      z-index: 50;
+    }
+    .chat-widget::after { content: '\\1F4AC'; font-size: 24px; }
+    .chat-label {
+      position: fixed;
+      bottom: 68px;
+      right: 24px;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      z-index: 50;
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <span>&#9881; username@testlawfirm.com</span>
+    <a href="index.html">Logout &#8594;</a>
+  </div>
+
+  <nav class="navbar">
+    <div class="nav-brand">
+      <div class="nav-brand-icon"></div>
+      <span class="nav-brand-text">CaseDock</span>
+    </div>
+    <div class="nav-links">
+      <a href="#" class="nav-link"><span class="nav-link-icon">&#128200;</span> Dashboard</a>
+      <a href="#" class="nav-link active"><span class="nav-link-icon">&#128196;</span> Leads</a>
+      <a href="#" class="nav-link"><span class="nav-link-icon">&#127891;</span> Training Center &#9662;</a>
+      <a href="#" class="nav-link"><span class="nav-link-icon">&#128101;</span> Community</a>
+      <a href="#" class="nav-link"><span class="nav-link-icon">&#9881;</span> Settings &#9662;</a>
+    </div>
+    <a href="#" class="nav-link"><span class="nav-link-icon">&#8505;</span> Support</a>
+  </nav>
+
+  <div class="content">
+    <div class="content-header">
+      <button class="filter-btn">&#9660; Filter</button>
+      <div class="search-wrap">
+        <input type="text" class="search-input" placeholder="Search Leads...">
+        <button class="search-btn">&#128269;</button>
+        <button class="export-btn" id="exportBtn">&#8595; Export</button>
+      </div>
+    </div>
+
+    <div class="leads-title-row">
+      <div class="leads-title">
+        <span class="leads-title-icon">&#128101;</span>
+        <span>Leads</span>
+      </div>
+      <div class="leads-meta">
+        <span>Rows: <strong id="rowCount">0</strong></span>
+        <div class="scroll-toggle">
+          <div class="toggle-track"><div class="toggle-thumb"></div></div>
+          <span>Scroll</span>
+        </div>
+      </div>
+    </div>
+
+    <table class="leads-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th></th>
+          <th>Id</th>
+          <th>Area of Law</th>
+          <th>Jurisdiction</th>
+          <th>Name</th>
+          <th>Phone</th>
+          <th>Email</th>
+          <th>Created</th>
+        </tr>
+      </thead>
+      <tbody id="leadsTableBody"></tbody>
+    </table>
+  </div>
+
+  <!-- Export Dialog -->
+  <div class="dialog-overlay" id="exportOverlay">
+    <div class="export-dialog">
+      <h2>&#8595; Export Leads</h2>
+      <p>Your data will be exported as a CSV (comma separated values) table.</p>
+      <div class="period-row">
+        <span class="period-label">Period</span>
+        <div class="period-options">
+          <label class="period-option"><input type="radio" name="period" value="today"> Today</label>
+          <label class="period-option"><input type="radio" name="period" value="7"> 7 days</label>
+          <label class="period-option"><input type="radio" name="period" value="90" checked> 90 days</label>
+          <label class="period-option"><input type="radio" name="period" value="selected"> 0 Selected rows</label>
+        </div>
+      </div>
+      <p class="period-note">Total number of past days to export, or selected items.</p>
+      <div class="export-dialog-footer">
+        <button class="btn-cancel" id="exportCancel">Cancel</button>
+        <button class="btn-export" id="exportConfirm">Export Leads</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chat widget -->
+  <div class="chat-widget" onclick="alert('Chat support is not available in test mode')"></div>
+  <div class="chat-label">Ask us a question!</div>
+
+  <script src="data.js"></script>
+  <script>
+    // Render leads table
+    const tbody = document.getElementById('leadsTableBody');
+    const rowCount = document.getElementById('rowCount');
+
+    function renderLeads() {
+      tbody.innerHTML = LEADS.map((lead, i) => `
+        <tr>
+          <td><input type="checkbox"></td>
+          <td class="row-num">${i + 1}</td>
+          <td class="lead-id"><a href="#">${lead.id}</a></td>
+          <td>${lead.area}</td>
+          <td>${lead.jurisdiction}</td>
+          <td>${lead.name}</td>
+          <td class="lead-phone"><a href="#">${lead.phone}</a></td>
+          <td class="lead-email"><a href="#">${lead.email}</a></td>
+          <td>${lead.created}</td>
+        </tr>
+      `).join('');
+      rowCount.textContent = LEADS.length;
+    }
+
+    renderLeads();
+
+    // Export dialog
+    const exportOverlay = document.getElementById('exportOverlay');
+    document.getElementById('exportBtn').addEventListener('click', () => {
+      exportOverlay.classList.add('visible');
+      window.location.hash = '#';
+    });
+    document.getElementById('exportCancel').addEventListener('click', () => {
+      exportOverlay.classList.remove('visible');
+    });
+    document.getElementById('exportConfirm').addEventListener('click', () => {
+      // Generate a simple CSV and trigger download
+      const header = 'Id,Area of Law,Jurisdiction,Name,Phone,Email,Created';
+      const rows = LEADS.map(l =>
+        `${l.id},"${l.area}","${l.jurisdiction}","${l.name}","${l.phone}","${l.email}",${l.created}`
+      );
+      const csv = [header, ...rows].join('\\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'leads_export_90days.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+      exportOverlay.classList.remove('visible');
+    });
+  </script>
+</body>
+</html>
