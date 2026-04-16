@@ -13,13 +13,15 @@
 
         serve = pkgs.writeShellScriptBin "serve" ''
           echo "Serving site at http://localhost:6969"
+          echo "Available UIs:"
+          ls site/
           ${pkgs.python3}/bin/python3 -m http.server 6969 --directory site
         '';
 
         build = pkgs.writeShellScriptBin "build" ''
           echo "Nothing to build — site/ is already static HTML."
-          echo "Contents:"
-          ls -la site/
+          echo "Available UIs:"
+          ls site/
         '';
       in
       {
@@ -33,7 +35,7 @@
           ];
 
           shellHook = ''
-            echo "enterprise-ui dev shell"
+            echo "ui-test dev shell"
             echo ""
             echo "  serve    — preview site at http://localhost:6969"
             echo "  prettier — format HTML/CSS/JS files"
