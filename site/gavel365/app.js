@@ -7,10 +7,74 @@
 
 // ==================== ROUTING ====================
 const views = {
-  '/matters/GAVEL-0007': 'view-matter-detail',
   '/people': 'view-people',
   '/matters': 'view-matters',
 };
+
+// Snapshot of the hard-coded GAVEL-0007 demo detail body so we can restore it
+// if the user ever navigates back to it after the detail DOM has been rewritten
+// to show a different matter.
+let matterDetailDemoHtml = null;
+
+function cacheMatterDetailDemo() {
+  if (matterDetailDemoHtml === null) {
+    const body = document.querySelector('#view-matter-detail .matter-detail-body');
+    if (body) {
+      matterDetailDemoHtml = body.innerHTML;
+    }
+  }
+}
+
+function renderMatterDetail(matterNo) {
+  cacheMatterDetailDemo();
+
+  const body = document.querySelector('#view-matter-detail .matter-detail-body');
+  if (!body) return;
+
+  // GAVEL-0007 is the rich landlord/tenant demo — keep its hard-coded body.
+  if (matterNo === 'GAVEL-0007' && matterDetailDemoHtml !== null) {
+    body.innerHTML = matterDetailDemoHtml;
+    document.getElementById('headerTitle').textContent =
+      'GAVEL-0007 - DeLuca, Landlord - Tenant | Petrova';
+    return;
+  }
+
+  const matter = MATTERS.find(m => m.no === matterNo);
+  if (!matter) {
+    body.innerHTML = '<div class="matter-detail-sidebar"><h3>Details</h3>' +
+      '<div class="detail-field"><strong>' + escapeHtml(matterNo) + '</strong></div>' +
+      '<p>Matter not found.</p></div>';
+    document.getElementById('headerTitle').textContent = matterNo + ' - Not Found';
+    return;
+  }
+
+  const clientDisplay = escapeHtml(matter.client || '');
+  const details = escapeHtml(matter.details || '');
+  const status = escapeHtml(matter.status || 'IN PROGRESS');
+  const badgeClass = status === 'RETURN DATE' ? 'badge-orange' : 'badge-green';
+
+  body.innerHTML =
+    '<div class="matter-detail-sidebar">' +
+      '<h3>Details</h3>' +
+      '<div class="detail-field"><strong>' + escapeHtml(matter.no) + '</strong> ' +
+        '<span class="badge ' + badgeClass + '">' + status + '</span></div>' +
+      '<div class="detail-field">Jane Doe <span class="gear-icon">&#9881;</span></div>' +
+      '<div class="detail-section">' +
+        '<h4>Client</h4>' +
+        '<p>' + clientDisplay + '</p>' +
+        '<div class="detail-label">Matter</div>' +
+        '<div class="detail-value">' + details + '</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="matter-detail-main">' +
+      '<h3>Correspondence</h3>' +
+      '<p style="padding:16px;color:#888">No correspondence yet for this matter.</p>' +
+    '</div>';
+
+  document.getElementById('headerTitle').textContent =
+    matter.no + ' - ' + (matter.client || '') +
+    (matter.details ? ', ' + matter.details : '');
+}
 
 function navigateTo(path) {
   window.location.hash = path;
@@ -39,48 +103,38 @@ function handleRoute() {
     return;
   }
 
-  // Match exact view
-  let matched = false;
+  // Match exact non-matter views
   for (const [route, viewId] of Object.entries(views)) {
     if (hash === route) {
       document.getElementById(viewId).classList.remove('hidden');
-      matched = true;
-
-      // Set title and header
       switch (route) {
-        case '/matters/GAVEL-0007':
-          document.title = 'Matter Details';
-          document.getElementById('headerTitle').textContent = 'GAVEL-0007 - DeLuca, Landlord - Tenant | Petrova';
-          break;
         case '/people':
           document.title = 'People';
           document.getElementById('headerTitle').textContent = 'People';
           renderPeople();
-          break;
+          return;
         case '/matters':
           document.title = 'Matters | GAVEL';
           document.getElementById('headerTitle').textContent = 'Matter List - ' + MATTERS.length + ' of ' + MATTERS.length + ' Matters';
           renderMatters();
-          break;
+          return;
       }
-      break;
     }
   }
 
-  // Handle matter detail for any matter
-  if (!matched && hash.startsWith('/matters/')) {
+  // Matter detail — render from MATTERS data (or the cached GAVEL-0007 demo body).
+  if (hash.startsWith('/matters/')) {
     document.getElementById('view-matter-detail').classList.remove('hidden');
     document.title = 'Matter Details';
     const matterNo = hash.replace('/matters/', '');
-    document.getElementById('headerTitle').textContent = matterNo + ' - DeLuca, Landlord - Tenant | Petrova';
+    renderMatterDetail(matterNo);
+    return;
   }
 
-  // Default to matter detail if no match
-  if (!matched && !hash.startsWith('/matters/')) {
-    document.getElementById('view-matter-detail').classList.remove('hidden');
-    document.title = 'Matter Details';
-    document.getElementById('headerTitle').textContent = 'GAVEL-0007 - DeLuca, Landlord - Tenant | Petrova';
-  }
+  // Fallback: show the GAVEL-0007 demo detail.
+  document.getElementById('view-matter-detail').classList.remove('hidden');
+  document.title = 'Matter Details';
+  renderMatterDetail('GAVEL-0007');
 }
 
 window.addEventListener('hashchange', handleRoute);
@@ -546,7 +600,7 @@ document.getElementById('matterDetailsBtn').addEventListener('click', function (
     : (desc.split(' - ')[0] || 'Unknown');
 
   const newMatter = {
-    no: 'GAVEL-' + String(MATTERS.length + 1).padStart(4, '0'),
+    no: nextMatterNo(),
     client: clientName,
     details: desc,
     staff: 'JD',
@@ -571,6 +625,21 @@ document.getElementById('matterDetailsBtn').addEventListener('click', function (
 });
 
 // ==================== UTILITIES ====================
+// Next GAVEL-#### id that doesn't collide with any existing matter. The seed
+// MATTERS list is not densely packed (ADMIN/IOLTA + GAVEL-0004..0017) so using
+// MATTERS.length+1 was producing duplicate ids.
+function nextMatterNo() {
+  let max = 0;
+  for (const m of MATTERS) {
+    const match = /^GAVEL-(\d+)$/.exec(m.no || '');
+    if (match) {
+      const n = parseInt(match[1], 10);
+      if (!Number.isNaN(n) && n > max) max = n;
+    }
+  }
+  return 'GAVEL-' + String(max + 1).padStart(4, '0');
+}
+
 function escapeHtml(str) {
   if (!str) return '';
   return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
